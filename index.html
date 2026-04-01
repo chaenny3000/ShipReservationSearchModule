@@ -2,14 +2,14 @@
 <html lang="ko">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>어바웃피싱 통합 예약 프로토타입 v74</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>어바웃피싱 통합 예약 프로토타입 v80</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM CDN -->
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
-    <!-- Babel CDN (for JSX) -->
+    <!-- Babel CDN -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <!-- Lucide Icons CDN -->
     <script src="https://unpkg.com/lucide@latest"></script>
@@ -21,10 +21,7 @@
         .cursor-grab { cursor: grab !important; }
         .cursor-grabbing { cursor: grabbing !important; }
         * { -webkit-user-drag: none; outline: none; }
-        .mobile-frame {
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5), 0 30px 60px -30px rgba(0,0,0,0.6);
-        }
-        /* Lucide Icon Styling */
+        .mobile-frame { box-shadow: 0 50px 100px -20px rgba(0,0,0,0.5), 0 30px 60px -30px rgba(0,0,0,0.6); }
         .lucide-icon { display: inline-block; vertical-align: middle; }
     </style>
 </head>
@@ -32,29 +29,7 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo, useRef } = React;
-
-        // --- Lucide Icon Component (CDN 대응형) ---
-        const Icon = ({ name, size = 20, className = "", color = "currentColor", strokeWidth = 2 }) => {
-            const iconRef = useRef(null);
-            useEffect(() => {
-                if (window.lucide) {
-                    window.lucide.createIcons({
-                        attrs: {
-                            stroke: color,
-                            'stroke-width': strokeWidth,
-                            width: size,
-                            height: size
-                        },
-                        nameAttr: 'data-lucide'
-                    });
-                }
-            }, [name, size, color, strokeWidth]);
-
-            return <i data-lucide={name} className={`lucide-icon ${className}`} style={{ width: size, height: size }}></i>;
-        };
-
-        // --- 전역 데이터 ---
+        // --- 글로벌 설정 및 데이터 (참조 오류 방지를 위해 최상단 배치) ---
         const REGIONS = ['강원', '경기', '경남', '경북', '광주', '대구', '대전', '부산', '서울', '세종', '울산', '인천', '전남', '전북', '제주도', '충남', '충북'];
         const FISHES = ['가자미', '갈치', '감성돔', '갑오징어', '고등어', '광어', '꽃게', '낙지', '노래미', '농어', '능성어', '대구', '도다리', '돌돔', '무늬오징어', '문어', '민어', '방어', '백조기', '벤자리', '벵에돔', '볼락', '부시리', '붉바리', '붕어', '삼치', '숭어', '열기', '오징어', '우럭', '전갱이', '주꾸미', '참돔', '참치', '한치', '홍감펭', '화살촉오징어'];
         const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
@@ -69,33 +44,61 @@
 
         const INITIAL_RECENT = ['남당항 쭈꾸미', '인천 갑오징어', '블랙이글스호'];
         const POPULAR_RANKING = [
-            { rank: 1, word: '주꾸미', trend: 'minus' },
-            { rank: 2, word: '갑오징어', trend: 'minus' },
-            { rank: 3, word: '참돔 타이라바', trend: 'up' },
-            { rank: 4, word: '영흥도 진두항', trend: 'new' },
-            { rank: 5, word: '대천항 광어', trend: 'up' },
-            { rank: 6, word: '문어 낚시', trend: 'minus' },
-            { rank: 7, word: '먼바다 갈치', trend: 'down' },
-            { rank: 8, word: '체험 낚시', trend: 'up' }
+            { rank: 1, word: '주꾸미', trend: 'minus' }, { rank: 2, word: '갑오징어', trend: 'minus' },
+            { rank: 3, word: '참돔 타이라바', trend: 'up' }, { rank: 4, word: '영흥도 진두항', trend: 'new' },
+            { rank: 5, word: '대천항 광어', trend: 'up' }, { rank: 6, word: '문어 낚시', trend: 'minus' },
+            { rank: 7, word: '먼바다 갈치', trend: 'down' }, { rank: 8, word: '체험 낚시', trend: 'up' }
         ];
-
         const RECOMMENDED_TAGS = ['주꾸미', '갑오징어', '인천연안부두', '대천항', '참돔 다운샷', '초보 낚시', '야간 갈치', '패밀리 출조'];
         const DEFAULT_SEARCH_STATE = { query: '', date: { year: 2026, month: 3, day: 28 }, people: 1, selectedRegions: [], selectedFishes: [] };
 
+        const { useState, useEffect, useMemo, useRef } = React;
+
+        // --- Lucide Icon Helper ---
+        const Icon = ({ name, size = 20, className = "", color = "currentColor" }) => {
+            useEffect(() => { if (window.lucide) window.lucide.createIcons(); }, [name, size, color]);
+            return <i data-lucide={name} className={`lucide-icon ${className}`} style={{ width: size, height: size, color: color }}></i>;
+        };
+
         // --- Sub Components ---
+        const PRDItem = ({ label, children, highlight }) => (
+            <div className={`p-5 rounded-3xl transition-all mb-4 ${highlight ? 'bg-blue-600/10 border border-blue-500/30' : 'bg-white/5 border border-transparent'}`}>
+                <div className="flex items-center gap-3 mb-3">
+                    <div className={`w-2.5 h-2.5 rounded-full ${highlight ? 'bg-blue-400 animate-pulse' : 'bg-slate-600'}`} />
+                    <p className={`text-[15px] font-bold ${highlight ? 'text-blue-400' : 'text-slate-100'}`}>{label}</p>
+                </div>
+                <div className="text-slate-400 text-[13px] leading-relaxed space-y-3 font-medium">{children}</div>
+            </div>
+        );
+
+        const DescriptionPanel = ({ screen, emptyCase }) => (
+            <div className="animate-in fade-in duration-500 p-8 h-full text-slate-400">
+                <div className="mb-10 border-b border-white/5 pb-6 text-white"><h2 className="text-2xl font-black uppercase tracking-tighter italic text-blue-500">Function Spec.</h2></div>
+                {screen === 'home' && <PRDItem label="예약 홈 상세 설계"><p>ㄴ 통합 검색 : 날짜/인원/지역/어종 4대 필터링 동시 설정.</p><p>ㄴ 필터 리셋 : 결과 페이지 이탈 시 검색 데이터 자동 초기화 정책.</p></PRDItem>}
+                {screen === 'search-input' && <PRDItem label="검색 상세 상세 설계"><p>ㄴ 프로모션 : 릴 세척 서비스 레드 배너 상단 고정.</p><p>ㄴ 내비게이션 : 히스토리 스택 관리로 결과페이지와 검색상세 간 유기적 복귀 보장.</p></PRDItem>}
+                {screen === 'result' && (
+                    <PRDItem label="검색 결과 상세 설계" highlight={!!emptyCase}>
+                        <p className="text-blue-400 font-bold">• 정보 표기 정책 (v73~)</p>
+                        <p>ㄴ 좌석 정보 : '좌석 {`{잔여}`}/{`{전체}`}' 형태로 표기 직관화.</p>
+                        <p>ㄴ 마감임박 : 3석 이하 선박 Red 강조 및 정보 영역 배지 이동.</p>
+                    </PRDItem>
+                )}
+            </div>
+        );
+
         const PeopleCounter = ({ initial, onConfirm }) => {
             const [val, setVal] = useState(initial);
             return (
                 <div className="flex flex-col h-full text-[#111827]">
                     <div className="bg-[#F8F9FB] rounded-[24px] p-8 flex justify-between items-center my-8 shadow-inner">
-                        <span className="text-xl font-bold">인원</span>
+                        <span className="text-xl font-bold text-[#111827]">인원</span>
                         <div className="flex items-center gap-10">
                             <button onClick={() => setVal(Math.max(1, val - 1))} className="w-12 h-12 bg-[#EEF1F5] rounded-full text-2xl font-bold text-[#5E6B7A]">−</button>
-                            <span className="text-3xl font-black min-w-[30px] text-center">{val}</span>
+                            <span className="text-3xl font-black min-w-[30px] text-center text-[#111827]">{val}</span>
                             <button onClick={() => setVal(Math.min(20, val + 1))} className="w-12 h-12 bg-[#EEF1F5] rounded-full text-2xl font-bold text-[#5E6B7A]">+</button>
                         </div>
                     </div>
-                    <button onClick={() => onConfirm(val)} className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-black mt-auto shadow-lg">확인</button>
+                    <button onClick={() => onConfirm(val)} className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-black mt-auto shadow-lg shadow-blue-50">확인</button>
                 </div>
             );
         };
@@ -113,72 +116,66 @@
                             <div key={item} onClick={() => setTemp(prev => prev.includes(item) ? prev.filter(x => x !== item) : [...prev, item])} className={`h-11 rounded-xl border flex items-center justify-center text-[13px] font-bold transition-all ${temp.includes(item) ? 'border-[#3F5EEA] bg-[#EEF2FF] text-[#3F5EEA]' : 'border-gray-200 bg-white text-gray-500'}`}>{item}</div>
                         ))}
                     </div>
-                    <button onClick={() => onConfirm(temp)} className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-black mt-auto">적용</button>
+                    <button onClick={() => onConfirm(temp)} className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-black mt-auto shadow-lg shadow-blue-50">적용</button>
                 </div>
             );
         };
 
         const DateSelector = ({ initial, onConfirm }) => {
             const [sel, setSel] = useState(initial);
-            const dim = 31;
             return (
                 <div className="flex flex-col h-full no-scrollbar text-[#111827]">
                     <div className="flex justify-between items-center mb-8 px-4">
-                        <button className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-slate-500"><Icon name="chevron-left" /></button>
+                        <Icon name="chevron-left" />
                         <div className="text-[18px] font-extrabold tracking-tight">2026년 3월</div>
-                        <button className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-slate-500"><Icon name="chevron-right" /></button>
+                        <Icon name="chevron-right" />
                     </div>
                     <div className="grid grid-cols-7 text-center text-[13px] font-bold mb-6 px-1 text-slate-300">
                         {WEEK.map(d => (<div key={d} className={d === '일' ? 'text-red-500' : d === '토' ? 'text-blue-600' : ''}>{d}</div>))}
                     </div>
-                    <div className="grid grid-cols-7 gap-y-2 text-center px-1 text-[#111827]">
-                        {[null, null, null, null, null].map((_, i) => <div key={i} />)}
-                        {Array.from({ length: dim }).map((_, i) => { 
+                    <div className="grid grid-cols-7 gap-y-2 text-center px-1">
+                        {[null, null, null, null, null].map((_, i) => <div key={`empty-${i}`} />)}
+                        {Array.from({ length: 31 }).map((_, i) => { 
                             const d = i + 1; const blocked = d < 28;
-                            return <div key={d} onClick={() => !blocked && setSel({...sel, day: d})} className={`h-11 w-11 mx-auto flex items-center justify-center font-extrabold rounded-full cursor-pointer transition-all ${blocked ? 'text-gray-200 opacity-40' : sel.day === d ? 'bg-[#3182F6] text-white shadow-lg' : 'text-slate-800 hover:bg-slate-50'}`}>{d}</div>
+                            return <div key={d} onClick={() => !blocked && setSel({...sel, day: d})} className={`h-11 w-11 mx-auto flex items-center justify-center font-extrabold rounded-full cursor-pointer transition-all ${blocked ? 'text-gray-200 opacity-40 text-slate-200' : sel.day === d ? 'bg-[#3182F6] text-white shadow-lg' : 'text-slate-800 hover:bg-slate-50'}`}>{d}</div>
                         })}
                     </div>
-                    <button onClick={() => onConfirm(sel)} className="w-full h-14 bg-[#3182F6] text-white rounded-[20px] font-black mt-8 text-base shadow-lg shadow-blue-100">선택 완료</button>
+                    <button onClick={() => onConfirm(sel)} className="w-full h-14 bg-[#3182F6] text-white rounded-[20px] font-black mt-8 text-base shadow-lg shadow-blue-50">선택 완료</button>
                 </div>
             );
         };
 
-        const PRDItem = ({ label, children, highlight }) => (
-            <div className={`p-5 rounded-3xl transition-all mb-4 ${highlight ? 'bg-blue-600/10 border border-blue-500/30' : 'bg-white/5 border border-transparent'}`}>
-                <div className="flex items-center gap-3 mb-3">
-                    <div className={`w-2 h-2 rounded-full ${highlight ? 'bg-blue-400 animate-pulse' : 'bg-slate-600'}`} />
-                    <p className={`text-[15px] font-bold ${highlight ? 'text-blue-400' : 'text-slate-100'}`}>{label}</p>
-                </div>
-                <div className="text-slate-400 text-[13px] leading-relaxed space-y-3 font-medium">{children}</div>
-            </div>
-        );
-
-        const DescriptionPanel = ({ screen, emptyCase }) => (
-            <div className="animate-in fade-in duration-500">
-                <div className="mb-6 border-b border-white/5 pb-4">
-                    <h3 className="text-white text-[18px] font-black uppercase tracking-tight">상세 기능 설계 (v74)</h3>
-                </div>
-                {screen === 'home' && <PRDItem label="예약 홈 정책"><p>ㄴ 통합 검색 : 한 구좌에서 날짜/지역 통합 설정.</p><p>ㄴ 휘발성 : 결과 페이지 이탈 시 필터 자동 초기화.</p></PRDItem>}
-                {screen === 'result' && <PRDItem label="결과 리스트 정책"><p>ㄴ 좌석 정보 : '좌석 8/20' 형태의 직관적 표기.</p><p>ㄴ 마감임박 : 3석 이하 선박 Red 강조 및 배지 노출.</p></PRDItem>}
-            </div>
-        );
-
         const EmptyState = ({ type, query, count, onAction }) => (
-            <div className="flex flex-col items-center pt-20 px-8 text-center text-[#111827]">
+            <div className="flex flex-col items-center pt-20 px-8 text-center text-[#111827] animate-in fade-in slide-in-from-bottom-4 duration-500">
                 <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-6 border border-slate-100 text-slate-200"><Icon name="alert-circle" size={32} /></div>
                 {type === 'no-query-match' ? (
                     <div>
-                        <h3 className="text-[19px] font-black mb-2 text-[#111827]">검색 결과가 없습니다.</h3>
-                        <p className="text-[12px] text-slate-400 mb-8 leading-relaxed">원하는 선박을 찾지 못했다면<br />항구명과 선박명을 함께 검색해 보세요.</p>
-                        <button onClick={() => onAction('request')} className="w-full h-13 bg-[#3182F6] text-white rounded-xl font-black shadow-md py-3.5 text-sm active:scale-95 flex items-center justify-center gap-2 px-6"><Icon name="plus" size={16}/>선박 추가 요청하기</button>
+                        <h3 className="text-[19px] font-black mb-2">검색 결과가 없습니다.</h3>
+                        <p className="text-[12px] text-slate-400 mb-10 leading-relaxed font-medium">원하는 선박을 찾지 못했다면<br />항구명과 선박명을 함께 검색해 보세요.</p>
+                        <button onClick={() => onAction('request')} className="w-full h-13 bg-[#3182F6] text-white rounded-xl font-black shadow-md flex items-center justify-center gap-2 py-4 active:scale-95 transition-all text-white"><Icon name="plus" size={16}/>선박 추가 요청하기</button>
                     </div>
                 ) : (
                     <div>
                         <h3 className="text-[19px] font-black mb-2 text-[#111827]">'{query}' 선박이 {count}건 있어요.</h3>
-                        <p className="text-[12px] text-slate-400 mb-8 leading-relaxed">설정하신 필터 조건에 맞는 선박이 없습니다.<br />필터를 변경하여 확인해 보세요.</p>
-                        <button onClick={() => onAction('reset-filter')} className="w-full h-13 border border-[#3182F6] text-[#3182F6] bg-blue-50/50 rounded-xl font-black py-3.5 text-sm active:scale-95 flex items-center justify-center gap-2 px-6"><Icon name="refresh-ccw" size={16}/>필터 초기화하기</button>
+                        <p className="text-[12px] text-slate-400 mb-10 leading-relaxed font-medium">설정하신 필터 조건에 맞는 선박이 없습니다.<br />필터를 변경하여 확인해 보세요.</p>
+                        <button onClick={() => onAction('reset-filter')} className="w-full h-13 border border-[#3182F6] text-[#3182F6] bg-blue-50 rounded-xl font-black flex items-center justify-center gap-2 py-4 active:scale-95 transition-all"><Icon name="refresh-ccw" size={16}/>필터 초기화하기</button>
                     </div>
                 )}
+                <div className="w-full mt-12 text-left">
+                    <h4 className="text-[17px] font-black mb-4 text-[#111827]">이런 선박은 어때요?</h4>
+                    <div className="space-y-4">
+                        {SHIPS_DATA.slice(0, 2).map(s => (
+                            <div key={s.id} className="bg-white border border-slate-100 p-4 rounded-2xl flex gap-4 shadow-sm active:scale-[0.98] transition-all text-[#111827]">
+                                <div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-2xl text-white">🚢</div>
+                                <div className="flex-1 min-w-0">
+                                    <p className="text-[14px] font-black text-[#111827] truncate">{s.name}</p>
+                                    <p className="text-[11px] text-slate-400 font-bold">{s.region} · {s.port}</p>
+                                    <p className="text-[13px] font-black text-blue-600 mt-1">{s.price.toLocaleString()}원~</p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
             </div>
         );
 
@@ -189,11 +186,13 @@
             const [isBsOpen, setIsBsOpen] = useState(null);
             const [sortOrder, setSortOrder] = useState('recommend');
             const [recentKeywords, setRecentKeywords] = useState(INITIAL_RECENT);
+            const [promotionTopic, setPromotionTopic] = useState('');
             const [searchState, setSearchState] = useState(DEFAULT_SEARCH_STATE);
             const [searchSource, setSearchSource] = useState('filter');
 
-            const formattedDate = (d) => `${d.month}/${d.day}(${WEEK[new Date(2026, d.month - 1, d.day).getDay()]})`;
-            const displayLabel = (selected, all, defaultLabel) => { if (selected.length === 0 || selected.length === all.length) return defaultLabel; if (selected.length === 1) return selected[0]; return `${selected[0]} 외 ${selected.length - 1}`; };
+            const getChipStyle = (isActive) => `flex items-center gap-1.5 border rounded-full px-3 h-9 whitespace-nowrap text-sm font-bold shadow-sm transition-all cursor-pointer ${isActive ? 'border-[#3182F6] bg-white text-[#3182F6]' : 'border-gray-200 bg-white text-gray-400'}`;
+            const formattedDate = (d) => `${d.month}/${d.day}(${WEEK[new Date(d.year, d.month - 1, d.day).getDay()]})`;
+            const displayLabel = (selected, all, defaultLabel) => { if (selected.length === 0 || selected.length === all.length) return defaultLabel; return selected.length === 1 ? selected[0] : `${selected[0]} 외 ${selected.length - 1}`; };
 
             const { filteredShips, queryOnlyShips, emptyCase } = useMemo(() => {
                 const queryOnly = SHIPS_DATA.filter(ship => { const q = searchState.query.toLowerCase().trim(); if (!q) return true; return ship.name.toLowerCase().includes(q) || ship.region.toLowerCase().includes(q) || ship.port.toLowerCase().includes(q); });
@@ -203,44 +202,46 @@
             }, [searchState, searchSource, sortOrder]);
 
             const executeSearch = (q) => { const t = q.trim(); if (t) setRecentKeywords(p => [t, ...p.filter(k => k !== t)].slice(0, 10)); setSearchState(p => ({ ...p, query: t })); setSearchSource('query'); setPreviousScreen('search-input'); setScreen('result'); };
+            const openPromotion = (topic) => { setPromotionTopic(topic); setPreviousScreen('search-input'); setScreen('promotion'); };
             const handleBack = () => { if (screen === 'result' || screen === 'promotion') setScreen(previousScreen); else if (screen === 'search-input') setScreen('home'); setSearchState(DEFAULT_SEARCH_STATE); };
             const resetAndGoHome = () => { setSearchState(DEFAULT_SEARCH_STATE); setScreen('home'); };
-            const closeBs = () => setIsBsOpen(null);
 
             return (
                 <div className="flex min-h-screen items-start justify-center bg-[#090b0e] p-6 text-[#111827]">
-                    <div className="hidden lg:block w-[500px] bg-[#0f172a] p-10 rounded-[44px] shadow-2xl mr-8 h-[915px] border border-white/10 relative overflow-hidden">
-                        <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-8 text-white"><Icon name="file-text" size={32} className="text-blue-500" /><h2 className="text-xl font-black tracking-tight uppercase">기능 설계서</h2></div>
-                        <div className="h-[calc(100%-100px)] overflow-y-auto no-scrollbar"><DescriptionPanel screen={screen} emptyCase={emptyCase} /></div>
+                    <div className="hidden lg:block w-[520px] bg-[#0f172a] rounded-[44px] shadow-2xl mr-8 h-[915px] border border-white/10 relative overflow-hidden">
+                        <DescriptionPanel screen={screen} emptyCase={emptyCase} />
                     </div>
 
                     <div className="mobile-frame relative h-[915px] w-[412px] overflow-hidden bg-white rounded-[56px] border-[14px] border-[#111] flex flex-col flex-shrink-0">
-                        <div className="h-10 px-8 flex justify-between items-center text-[12px] font-bold bg-white z-50"><span>9:41</span><div className="flex gap-2 items-center text-[#111827]"><Icon name="waves" size={14}/><Icon name="bell" size={14}/><div className="w-6 h-3 border border-black rounded-sm flex items-center justify-center text-[7px] font-black text-black">100</div></div></div>
+                        <div className="h-10 px-8 flex justify-between items-center text-[12px] font-bold bg-white z-50 text-[#111827]"><span>9:41</span><div className="flex gap-2 text-[#111827]"><Icon name="waves" size={14}/><Icon name="bell" size={14}/><div className="w-6 h-3 border border-black rounded-sm flex items-center justify-center text-[7px] font-black text-black">100</div></div></div>
                         
                         <div className="flex-1 relative overflow-hidden bg-white">
                             {screen === 'home' && (
                                 <div className="h-full flex flex-col no-scrollbar overflow-y-auto pb-24 px-4 text-[#111827]">
-                                    <header className="h-14 flex items-center justify-between mb-4 text-[#111827]"><h1 className="text-[24px] font-black tracking-tighter">예약.</h1><div className="flex gap-4 items-center text-[#111827]"><Icon name="bookmark" size={24}/><div className="w-8 h-8 rounded-full bg-[#DEE9FF] text-[#3182F6] flex items-center justify-center text-[11px] font-black text-[#3182F6]">CH</div></div></header>
+                                    <header className="h-14 flex items-center justify-between mb-4"><h1 className="text-[24px] font-black tracking-tighter text-[#111827]">예약.</h1><div className="flex gap-4 items-center text-[#111827]"><Icon name="bookmark" size={24}/><div className="w-8 h-8 rounded-full bg-[#DEE9FF] text-[#3182F6] flex items-center justify-center text-[11px] font-black">CH</div></div></header>
                                     <div className="mt-2 flex items-center gap-4 text-[16px] font-bold text-[#A0A0A8] mb-6 text-[#A0A0A8]"><span className="text-[#222]">홈</span><span>탐색</span><span>조황</span></div>
                                     <div className="bg-[#4662EA] rounded-[24px] p-3 text-white shadow-xl mb-8">
-                                        <div className="px-2 pt-1 pb-3 flex justify-between items-start"><div><h2 className="text-[20px] font-bold text-white">전국 실시간 예약</h2><p className="text-[11px] opacity-80 mt-0.5 text-white">조건에 맞는 출조 선박을 찾아보세요.</p></div><Icon name="anchor" size={32} className="opacity-20 text-white" /></div>
+                                        <div className="px-2 pt-1 pb-3 flex justify-between items-start"><div><h2 className="text-[20px] font-bold text-white text-white">전국 실시간 예약</h2><p className="text-[11px] opacity-80 mt-0.5 text-white">조건에 맞는 출조 선박을 찾아보세요.</p></div><Icon name="anchor" size={32} color="white" className="opacity-20 text-white" /></div>
                                         <div className="bg-white rounded-[14px] p-2.5 flex flex-col gap-1.5 text-[#111827]">
-                                            <div onClick={() => { setPreviousScreen('home'); setScreen('search-input'); }} className="bg-[#F7F8FA] border border-[#E8EBF2] rounded-xl flex items-center h-10 px-4 cursor-pointer text-[#A0A4AE] text-[13px] font-bold"><Icon name="search" size={16} className="mr-2.5" />선박명. 지역. 어종. 항구명 검색하기</div>
-                                            <div className="flex gap-1.5 text-[#111827]"><div onClick={() => setIsBsOpen('people')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer font-bold text-[13px] text-[#111827]"><Icon name="user" size={16} className="text-[#4662EA]" />{searchState.people}명</div><div onClick={() => setIsBsOpen('region')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer font-bold text-[13px] text-[#111827]"><Icon name="map-pin" size={16} className="text-[#4662EA]" />{displayLabel(searchState.selectedRegions, REGIONS, '전체 지역')}</div></div>
-                                            <button onClick={() => { setSearchSource('filter'); setPreviousScreen('home'); setScreen('result'); }} className="w-full h-10 bg-[#2F3B8F] text-white rounded-lg font-bold text-[14px] text-white">선박 검색</button>
+                                            <div onClick={() => { setPreviousScreen('home'); setScreen('search-input'); }} className="bg-[#F7F8FA] border border-[#E8EBF2] rounded-xl flex items-center h-10 px-4 cursor-pointer text-[#A0A4AE] text-[13px] font-bold"><Icon name="search" size={16} className="mr-2.5" />선박명. 지역. 어종 검색</div>
+                                            <div className="flex gap-1.5 text-[#111827]"><div onClick={() => setIsBsOpen('date')} className="flex-[2.2] bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer text-[#111827] font-bold text-[13px]"><Icon name="calendar" size={16} color="#4662EA" />{formattedDate(searchState.date)}</div><div onClick={() => setIsBsOpen('people')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer text-[#111827] font-bold text-[13px]"><Icon name="user" size={16} color="#4662EA" />{searchState.people}명</div></div>
+                                            <div className="flex gap-1.5 text-[#111827]"><div onClick={() => setIsBsOpen('region')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer text-[#111827] font-bold text-[13px]"><Icon name="map-pin" size={16} color="#4662EA" />{displayLabel(searchState.selectedRegions, REGIONS, '전체 지역')}</div><div onClick={() => setIsBsOpen('fish')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer text-[#111827] font-bold text-[13px]"><Icon name="waves" size={16} color="#4662EA" />{displayLabel(searchState.selectedFishes, FISHES, '전체 어종')}</div></div>
+                                            <button onClick={() => { setSearchSource('filter'); setScreen('result'); }} className="w-full h-11 bg-[#2F3B8F] text-white rounded-lg font-bold text-[14px] text-white shadow-md active:scale-95 transition-all">선박 검색</button>
                                         </div>
                                     </div>
                                 </div>
                             )}
 
                             {screen === 'search-input' && (
-                                <div className="h-full bg-white animate-in slide-in-from-bottom flex flex-col">
-                                    <header className="h-14 px-4 flex items-center gap-3 border-b border-slate-50 text-[#111827]"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full text-black"><Icon name="chevron-left" size={24} /></button><div className="flex-1 h-11 bg-slate-100 rounded-[14px] flex items-center px-4 gap-3 text-slate-400"><Icon name="search" size={20}/><input autoFocus placeholder="선박명. 지역. 어종 검색" className="bg-transparent flex-1 outline-none text-slate-900 font-bold" value={searchState.query} onChange={(e) => setSearchState(p => ({...p, query: e.target.value}))} onKeyDown={(e) => e.key === 'Enter' && executeSearch(searchState.query)} /></div></header>
+                                <div className="h-full bg-white animate-in slide-in-from-bottom flex flex-col text-[#111827]">
+                                    <header className="h-14 px-4 flex items-center gap-3 border-b border-slate-50 flex-shrink-0"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full text-black"><Icon name="chevron-left" size={24} /></button><div className="flex-1 h-11 bg-slate-100 rounded-[14px] flex items-center px-4 gap-3 text-slate-400"><Icon name="search" size={20}/><input autoFocus placeholder="선박명. 지역. 어종 검색" className="bg-transparent flex-1 outline-none text-slate-900 font-bold" value={searchState.query} onChange={(e) => setSearchState(p => ({...p, query: e.target.value}))} onKeyDown={(e) => e.key === 'Enter' && executeSearch(searchState.query)} /></div></header>
                                     <div className="flex-1 overflow-y-auto no-scrollbar">
-                                        <div className="h-[54px] bg-[#BF3D49] flex items-center justify-between px-6 text-white italic text-[13px] font-black shadow-inner"><p>어바웃피싱 릴 세척 서비스 ~40% 특가</p><Icon name="settings" size={20} /></div>
-                                        <div className="px-6 py-8 space-y-12 text-[#111827]">
-                                            <section><h4 className="font-black mb-5 text-[#111827]">최근 검색어</h4><div className="flex gap-2 overflow-x-auto no-scrollbar text-[#111827]">{recentKeywords.map(w => (<div key={w} onClick={() => executeSearch(w)} className="px-4 py-2 bg-white rounded-full border border-slate-200 text-[13px] font-bold text-slate-600 whitespace-nowrap cursor-pointer active:bg-blue-50 text-slate-600">{w}</div>))}</div></section>
-                                            <section><h4 className="font-black mb-5 text-[#111827]">기획전 카테고리</h4><div className="flex gap-5 overflow-x-auto no-scrollbar">{['주꾸미', '갑오징어', '참돔', '우럭'].map((n, i) => (<div key={n} onClick={() => executeSearch(n)} className="flex flex-col items-center gap-2.5 cursor-pointer active:scale-95 transition-transform"><div className="w-16 h-16 bg-[#F9F1F3] rounded-full flex items-center justify-center text-3xl shadow-sm border border-slate-50 relative overflow-hidden">{['🐙', '🦑', '🐠', '🐟'][i]}<span className="absolute bottom-0 right-0 bg-black/40 text-[7px] text-white font-black px-1 py-0.5 rounded-tl-sm">AD</span></div><span className="text-[11px] font-bold text-slate-500">{n}</span></div>))}</div></section>
+                                        {/* v73: 검색 페이지 레드 배너 복구 */}
+                                        <div className="h-[54px] bg-[#BF3D49] flex items-center justify-between px-6 text-white italic text-[13px] font-black shadow-inner flex-shrink-0"><p>어바웃피싱 릴 세척 서비스 ~40% 특가</p><Icon name="settings" size={20} color="white" /></div>
+                                        <div className="px-6 py-8 space-y-12">
+                                            <section><h4 className="font-black mb-5 text-[#111827]">최근 검색어</h4><div className="flex gap-2 overflow-x-auto no-scrollbar text-[#111827]">{recentKeywords.map(w => (<div key={w} onClick={() => executeSearch(w)} className="px-4 py-2 bg-white rounded-full border border-slate-200 text-[13px] font-bold text-slate-600 whitespace-nowrap cursor-pointer active:bg-blue-50">{w}</div>))}</div></section>
+                                            <section><h4 className="font-black mb-5 text-[#111827]">기획전 카테고리</h4><div className="flex gap-5 overflow-x-auto no-scrollbar">{['주꾸미', '갑오징어', '참돔', '우럭', '광어', '문어'].map((n, i) => (<div key={n} onClick={() => openPromotion(n)} className="flex flex-col items-center gap-2.5 cursor-pointer active:scale-95 transition-transform"><div className="w-16 h-16 bg-[#F9F1F3] rounded-full flex items-center justify-center text-3xl shadow-sm border border-slate-50 relative overflow-hidden">{['🐙', '🦑', '🐠', '🐟', '🍣', '🦐'][i]}<span className="absolute bottom-0 right-0 bg-black/40 text-[7px] text-white font-black px-1 py-0.5 rounded-tl-sm text-white">AD</span></div><span className="text-[11px] font-bold text-slate-500">{n}</span></div>))}</div></section>
+                                            <section><div className="flex items-center justify-between mb-5 text-[#111827]"><h4 className="text-[16px] font-black">급상승 검색어</h4><span className="text-[11px] font-bold text-slate-300">오후 2:00 업데이트</span></div><div className="grid grid-cols-2 gap-x-10 gap-y-5">{POPULAR_RANKING.slice(0, 8).map((item) => (<div key={item.word} onClick={() => executeSearch(item.word)} className="flex items-center justify-between py-1 border-b border-slate-50 cursor-pointer active:bg-slate-50 text-[#111827] font-bold"><div className="flex items-center gap-3"><span className="text-[14px] font-black">{item.rank}</span><span className="text-[14px] font-bold text-slate-600 truncate">{item.word}</span></div>{item.trend === 'up' ? <Icon name="arrow-up" size={12} color="#ef4444"/> : <Icon name="minus" size={12} color="#cbd5e1"/>}</div>))}</div></section>
                                         </div>
                                     </div>
                                 </div>
@@ -248,17 +249,29 @@
 
                             {screen === 'result' && (
                                 <div className="h-full bg-slate-50 flex flex-col animate-in slide-in-from-right no-scrollbar pb-24 text-[#111827]">
-                                    <header className="h-14 px-4 flex items-center gap-3 bg-white shadow-sm text-[#111827]"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full text-black"><Icon name="chevron-left" size={24}/></button><div onClick={() => setScreen('search-input')} className="flex-1 h-10 bg-slate-100 rounded-[14px] flex items-center px-4 gap-3 cursor-pointer text-sm font-bold text-slate-900 text-slate-900"><Icon name="search" size={16} className="text-slate-400" />{searchState.query || "선박 검색하기"}</div></header>
+                                    <header className="h-14 px-4 flex items-center gap-3 bg-white shadow-sm text-[#111827] flex-shrink-0"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full text-black"><Icon name="chevron-left" size={24}/></button><div onClick={() => { setPreviousScreen('result'); setScreen('search-input'); }} className="flex-1 h-10 bg-slate-100 rounded-[14px] flex items-center px-4 gap-3 cursor-pointer text-sm font-bold text-slate-900 text-slate-900"><Icon name="search" size={16} className="text-slate-400" />{searchState.query || "선박 검색하기"}</div></header>
+                                    
+                                    {/* v73: 상단 4종 필터 칩 영역 복구 */}
+                                    <div className="bg-white px-4 pt-2 pb-4 shadow-sm border-b border-gray-100 no-scrollbar flex-shrink-0">
+                                        <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-2 text-[#111827]">
+                                           <div onClick={() => setIsBsOpen('date')} className={getChipStyle(true)}><Icon name="calendar" size={16} /> {formattedDate(searchState.date)}</div>
+                                           <div onClick={() => setIsBsOpen('people')} className={getChipStyle(true)}><Icon name="user" size={16} /> {searchState.people}명</div>
+                                           <div onClick={() => setIsBsOpen('region')} className={getChipStyle(searchState.selectedRegions.length > 0)}><Icon name="map-pin" size={16} /> {displayLabel(searchState.selectedRegions, REGIONS, '전체 지역')}</div>
+                                           <div onClick={() => setIsBsOpen('fish')} className={getChipStyle(searchState.selectedFishes.length > 0)}><Icon name="waves" size={16} /> {displayLabel(searchState.selectedFishes, FISHES, '전체 어종')}</div>
+                                        </div>
+                                    </div>
+
                                     <div className="flex-1 overflow-y-auto no-scrollbar">
-                                        {emptyCase ? <EmptyState type={emptyCase} query={searchState.query} count={queryOnlyShips.length} onAction={(act) => { if (act === 'reset-filter') setSearchState(DEFAULT_SEARCH_STATE); else if (act === 'view-all') setSearchState(DEFAULT_SEARCH_STATE); }} /> : (
+                                        {emptyCase ? <EmptyState type={emptyCase} query={searchState.query} count={queryOnlyShips.length} onAction={(act) => { if (act === 'reset-filter') setSearchState(DEFAULT_SEARCH_STATE); else if (act === 'view-all') setSearchState(DEFAULT_SEARCH_STATE); else resetAndGoHome(); }} /> : (
                                             <div className="p-4 space-y-4">
-                                                <div className="flex justify-between items-center text-xs font-bold text-slate-500 mb-2 px-1 text-slate-500"><span>검색한 선박 <span className="text-[#111827]">{filteredShips.length}건</span></span><div onClick={() => setIsBsOpen('sort')} className="flex items-center gap-1 text-[#111827] cursor-pointer text-[#111827]"><Icon name="trending-up" size={14} className="text-blue-500" />{sortLabel[sortOrder]}<Icon name="chevron-down" size={14} /></div></div>
+                                                <div className="flex justify-between items-center text-xs font-bold text-slate-500 mb-2 px-1 text-slate-500"><span>검색한 선박 <span className="text-[#111827]">{filteredShips.length}건</span></span><div onClick={() => setIsBsOpen('sort')} className="flex items-center gap-1 text-[#111827] cursor-pointer font-bold"><Icon name="trending-up" size={14} color="#3182F6" />{sortLabel[sortOrder]}<Icon name="chevron-down" size={14} /></div></div>
                                                 {filteredShips.map(ship => (
                                                     <div key={ship.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[0.99] transition-all text-[#111827]">
-                                                        <div className="flex p-4 gap-4 text-[#111827]"><div className="w-24 h-24 bg-slate-900 rounded-xl flex items-center justify-center text-4xl shadow-inner text-white">🚢</div><div className="flex-1 min-w-0"><div className="flex items-center gap-1.5 mb-1 text-[#111827]"><h4 className="font-black text-base truncate text-[#111827]">{ship.name}</h4>{ship.hurry && <span className="bg-red-50 text-red-500 text-[9px] font-black px-1.5 py-0.5 rounded text-red-500">마감임박</span>}</div><p className="text-[11px] text-slate-400 font-bold text-slate-400">{ship.region} · {ship.port}</p><div className="mt-2 font-black text-base text-[#111827]">{ship.price.toLocaleString()}원~</div></div></div>
+                                                        <div className="flex p-4 gap-4 text-[#111827]"><div className="w-24 h-24 bg-slate-900 rounded-xl flex items-center justify-center text-4xl shadow-inner text-white">🚢</div><div className="flex-1 min-w-0 text-[#111827]"><div className="flex items-center gap-1.5 mb-1 text-[#111827]"><h4 className="font-black text-base truncate text-[#111827]">{ship.name}</h4>{ship.hurry && <span className="bg-red-50 text-red-500 text-[9px] font-black px-1.5 py-0.5 rounded text-red-500">마감임박</span>}</div><div className="flex gap-1 mb-2 overflow-x-auto no-scrollbar">{ship.fish.map(f => <span key={f} className="text-[9px] bg-blue-50 text-blue-600 px-1.5 py-0.5 rounded font-black whitespace-nowrap mr-1">{f}</span>)}</div><p className="text-[11px] text-slate-400 font-bold text-slate-400">{ship.region} · {ship.port}</p><div className="mt-2 font-black text-base text-[#111827]">{ship.price.toLocaleString()}원~</div></div></div>
                                                         <div className="px-4 py-3 bg-[#F8FAFC] border-t border-slate-50 flex items-center justify-between text-slate-400 text-[10px] font-bold">
-                                                            <div className="text-slate-400"><span>조황 <span className="text-blue-500 text-blue-500">{ship.reviews.toLocaleString()}건</span></span><span className="mx-2 text-slate-200">|</span><span>좌석 <span className="text-[#111827] text-[#111827]">{ship.seats}/{ship.totalSeats}</span></span></div>
-                                                            <button className={`px-4 h-9 rounded-lg font-black text-white ${ship.seats <= 3 ? 'bg-[#FF5050]' : 'bg-[#3182F6]'}`}>{ship.seats <= 3 ? `잔여 ${ship.seats}석 · 예약` : '바로 예약'}</button>
+                                                            {/* v73: 조황 | 좌석 8/20 표기 규격 적용 */}
+                                                            <div className="text-slate-400 flex items-center gap-1.5"><span>조황 <span className="text-blue-500 font-black">{ship.reviews.toLocaleString()}건</span></span><span className="text-slate-200">|</span><span>좌석 <span className="text-[#111827] font-black">{ship.seats}/{ship.totalSeats}</span></span></div>
+                                                            <button className={`px-4 h-9 rounded-lg font-black text-white active:scale-95 transition-all ${ship.seats <= 3 ? 'bg-[#FF5050]' : 'bg-[#3182F6]'}`}>{ship.seats <= 3 ? `잔여 ${ship.seats}석 · 예약` : '바로 예약'}</button>
                                                         </div>
                                                     </div>
                                                 ))}
@@ -267,24 +280,35 @@
                                     </div>
                                 </div>
                             )}
+
+                            {screen === 'promotion' && (
+                                <div className="h-full bg-white animate-in slide-in-from-right no-scrollbar flex flex-col text-[#111827]">
+                                    <header className="h-14 px-4 flex items-center gap-3 border-b border-slate-50 flex-shrink-0 text-[#111827]"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full active:bg-gray-100"><Icon name="chevron-left" size={24} className="text-black" /></button><h1 className="text-[18px] font-black">{promotionTopic} 기획전</h1></header>
+                                    <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-8">
+                                        <div className="aspect-[16/9] bg-blue-50 rounded-3xl flex flex-col items-center justify-center p-6 text-center border border-blue-100 text-[#111827]"><div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-4xl shadow-sm mb-4 text-[#111827]">🎁</div><h2 className="text-[20px] font-black text-[#2F3B8F]">{promotionTopic} 시즌 한정 특가</h2><p className="text-[13px] text-blue-600 mt-2 font-bold opacity-80 text-blue-600 font-black">인기 선박 최대 30% 할인이 진행 중입니다.</p></div>
+                                        <div><h3 className="text-[17px] font-black mb-4 text-[#111827]">현재 예약 가능한 선박</h3><div className="space-y-4 text-[#111827]">{SHIPS_DATA.slice(0, 2).map(s => (<div key={s.id} onClick={() => { setSearchState(p => ({...p, query: promotionTopic})); setScreen('result'); }} className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm flex gap-4 cursor-pointer active:bg-slate-50 text-[#111827]"><div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-2xl text-white">🚢</div><div className="flex-1 text-[#111827]"><p className="text-[14px] font-black">{s.name}</p><p className="text-[11px] text-slate-400 font-bold text-slate-400">{s.region} · {s.port}</p><p className="text-[13px] font-black text-blue-600 mt-2 text-blue-600 font-black">{s.price.toLocaleString()}원~</p></div></div>))}</div></div>
+                                    </div>
+                                </div>
+                            )}
                         </div>
 
-                        <nav className="absolute bottom-0 left-0 right-0 flex h-[84px] items-start justify-around border-t border-[#E8E8ED] bg-white px-4 pt-2 z-[90] text-slate-400"><div onClick={resetAndGoHome} className="flex flex-col items-center gap-1 text-[#222] cursor-pointer"><Icon name="navigation" size={20}/><span className="text-[10px] font-black">홈</span></div><div className="flex flex-col items-center gap-1"><Icon name="message-circle" size={20}/><span className="text-[10px] font-bold">커뮤니티</span></div><div onClick={() => { setScreen('result'); }} className="flex flex-col items-center gap-1 text-slate-400 cursor-pointer"><Icon name="calendar" size={20}/><span className="text-[10px] font-bold">예약</span></div><div className="flex flex-col items-center gap-1"><Icon name="anchor" size={20}/><span className="text-[10px] font-bold">중고장터</span></div><div className="flex flex-col items-center gap-1"><Icon name="user" size={20}/><span className="text-[10px] font-bold">쇼핑</span></div></nav>
+                        <nav className="absolute bottom-0 left-0 right-0 flex h-[84px] items-start justify-around border-t border-[#E8E8ED] bg-white px-4 pt-2 z-[90] text-slate-400 text-slate-400 flex-shrink-0 text-[#111827]"><div onClick={resetAndGoHome} className="flex flex-col items-center gap-1 text-[#222] cursor-pointer text-[#222]"><Icon name="home" size={20}/><span className="text-[10px] font-black text-black">홈</span></div><div className="flex flex-col items-center gap-1 text-slate-400"><Icon name="message-circle" size={20}/><span className="text-[10px] font-bold text-slate-400">톡</span></div><div onClick={() => { setSearchSource('filter'); setScreen('result'); }} className="flex flex-col items-center gap-1 text-slate-400 cursor-pointer text-slate-400"><Icon name="calendar" size={20}/><span className="text-[10px] font-bold text-slate-400">예약</span></div><div className="flex flex-col items-center gap-1 text-slate-400"><Icon name="user" size={20}/><span className="text-[10px] font-bold text-slate-400">MY</span></div></nav>
                         
                         {isBsOpen && (
                             <div className="absolute inset-0 z-[1000] flex items-end">
-                                <div className="absolute inset-0 bg-black/50 animate-in fade-in duration-200" onClick={closeBs} />
+                                <div className="absolute inset-0 bg-black/50" onClick={() => setIsBsOpen(null)} />
                                 <div className="relative w-full bg-white rounded-t-[32px] px-5 pt-4 pb-12 shadow-2xl h-auto min-h-[420px] flex flex-col animate-in slide-in-from-bottom duration-300">
-                                    <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 text-slate-300" /><h3 className="text-[20px] font-bold text-center mb-6 text-[#111827]">{isBsOpen === 'region' ? '지역 선택' : isBsOpen === 'fish' ? '어종 선택' : isBsOpen === 'people' ? '인원 선택' : '정렬 기준'}</h3>
+                                    <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4" /><h3 className="text-[20px] font-bold text-center mb-6 text-[#111827]">{isBsOpen === 'region' ? '지역 선택' : isBsOpen === 'fish' ? '어종 선택' : isBsOpen === 'people' ? '인원 선택' : isBsOpen === 'date' ? '날짜 선택' : '정렬 기준'}</h3>
                                     <div className="flex-1 overflow-y-auto no-scrollbar">
-                                        {isBsOpen === 'region' && <MultiSelector items={REGIONS} initial={searchState.selectedRegions} onConfirm={(v) => { setSearchState(p => ({...p, selectedRegions: v})); closeBs(); }} />}
-                                        {isBsOpen === 'fish' && <MultiSelector items={FISHES} initial={searchState.selectedFishes} onConfirm={(v) => { setSearchState(p => ({...p, selectedFishes: v})); closeBs(); }} />}
-                                        {isBsOpen === 'people' && <PeopleCounter initial={searchState.people} onConfirm={(v) => { setSearchState(p => ({...p, people: v})); closeBs(); }} />}
+                                        {isBsOpen === 'region' && <MultiSelector items={REGIONS} initial={searchState.selectedRegions} onConfirm={(v) => { setSearchState(p => ({...p, selectedRegions: v})); setIsBsOpen(null); }} />}
+                                        {isBsOpen === 'fish' && <MultiSelector items={FISHES} initial={searchState.selectedFishes} onConfirm={(v) => { setSearchState(p => ({...p, selectedFishes: v})); setIsBsOpen(null); }} />}
+                                        {isBsOpen === 'people' && <PeopleCounter initial={searchState.people} onConfirm={(v) => { setSearchState(p => ({...p, people: v})); setIsBsOpen(null); }} />}
+                                        {isBsOpen === 'date' && <DateSelector initial={searchState.date} onConfirm={(v) => { setSearchState(p => ({...p, date: v})); setIsBsOpen(null); }} />}
                                         {isBsOpen === 'sort' && (
-                                            <div className="flex flex-col gap-3 px-4 pb-4">
+                                            <div className="flex flex-col gap-3 px-4 pb-4 text-[#111827]">
                                                 {Object.entries(sortLabel).map(([key, label]) => (
-                                                    <div key={key} onClick={() => { setSortOrder(key); closeBs(); }} className={`flex items-center justify-between h-14 px-5 rounded-2xl border transition-all cursor-pointer ${sortOrder === key ? 'border-blue-500 bg-blue-50 text-blue-600 font-black' : 'border-gray-100 bg-white text-slate-600'}`}>
-                                                        <span className="text-[15px]">{label}</span>{sortOrder === key && <Icon name="check-circle-2" size={20} className="text-blue-600" />}
+                                                    <div key={key} onClick={() => { setSortOrder(key); setIsBsOpen(null); }} className={`h-14 flex items-center px-6 rounded-2xl border transition-all cursor-pointer ${sortOrder === key ? 'border-blue-500 bg-blue-50 text-blue-600 font-black' : 'border-gray-100'}`}>
+                                                        <span className="text-[15px]">{label}</span>{sortOrder === key && <Icon name="check-circle-2" size={20} color="#3182F6" />}
                                                     </div>
                                                 ))}
                                             </div>
