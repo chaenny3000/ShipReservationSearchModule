@@ -3,19 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>어바웃피싱 통합 예약 프로토타입 v73 (최종 안정화)</title>
+    <title>어바웃피싱 통합 예약 프로토타입 v73</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- React & ReactDOM CDN -->
-    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
-    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <!-- Babel CDN (for JSX) -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
-    <!-- Lucide React CDN (React 전용 아이콘 라이브러리) -->
-    <script src="https://unpkg.com/lucide-react"></script>
+    <!-- Lucide React UMD Build (Fixed CDN path) -->
+    <script src="https://unpkg.com/lucide-react@0.344.0/dist/umd/lucide-react.js"></script>
     <style>
         @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-        body { font-family: 'Pretendard', sans-serif; background-color: #090b0e; margin: 0; }
+        body { font-family: 'Pretendard', sans-serif; background-color: #090b0e; margin: 0; padding: 0; }
         .no-scrollbar::-webkit-scrollbar { display: none !important; }
         .no-scrollbar { -ms-overflow-style: none !important; scrollbar-width: none !important; }
         .cursor-grab { cursor: grab !important; }
@@ -30,238 +30,316 @@
     <div id="root"></div>
 
     <script type="text/babel">
-        const { useState, useEffect, useMemo, useRef } = React;
-        
-        // LucideReact 글로벌 객체에서 컴포넌트 추출
-        const { 
-            Search, Calendar, User, MapPin, ChevronLeft, ChevronRight, X, Filter, 
-            ChevronDown, Waves, Bell, Bookmark, MessageCircle, Anchor, Navigation, 
-            TrendingUp, CreditCard, CheckCircle2, Info, Heart, Ticket, AlertCircle, 
-            Eye, Star, ShoppingBag, HelpCircle, FileText, Zap, PlusCircle, Flame, 
-            ArrowUp, ArrowDown, Minus, Maximize2, ScanLine, RefreshCcw, Plus, Layout, Gift, Clock 
-        } = LucideReact;
+        // IIFE를 사용하여 전역 스코프 오염 및 중복 선언 방지
+        (function() {
+            const { useState, useEffect, useMemo, useRef } = React;
+            
+            // Lucide 아이콘 매핑 (글로벌 객체 이름 확인: LucideReact)
+            const { 
+                Search, Calendar, User, MapPin, ChevronLeft, ChevronRight, X, Filter, 
+                ChevronDown, Waves, Bell, Bookmark, MessageCircle, Anchor, Navigation, 
+                TrendingUp, CreditCard, CheckCircle2, Info, Heart, Ticket, AlertCircle, 
+                Eye, Star, ShoppingBag, HelpCircle, FileText, Zap, PlusCircle, Flame, 
+                ArrowUp, ArrowDown, Minus, Maximize2, ScanLine, RefreshCcw, Plus, Layout, Gift, Clock 
+            } = LucideReact;
 
-        // --- 전역 설정 데이터 ---
-        const REGIONS = ['강원', '경기', '경남', '경북', '광주', '대구', '대전', '부산', '서울', '세종', '울산', '인천', '전남', '전북', '제주도', '충남', '충북'];
-        const FISHES = ['가자미', '갈치', '감성돔', '갑오징어', '고등어', '광어', '꽃게', '낙지', '노래미', '농어', '능성어', '대구', '도다리', '돌돔', '무늬오징어', '문어', '민어', '방어', '백조기', '벤자리', '벵에돔', '볼락', '부시리', '붉바리', '붕어', '삼치', '숭어', '열기', '오징어', '우럭', '전갱이', '주꾸미', '참돔', '참치', '한치', '홍감펭', '화살촉오징어'];
-        const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
-        const sortLabel = { recommend: '추천순', price_low: '낮은 가격순', price_high: '높은 가격순', seats: '잔여석순' };
+            // --- 전역 설정 데이터 ---
+            const REGIONS = ['강원', '경기', '경남', '경북', '광주', '대구', '대전', '부산', '서울', '세종', '울산', '인천', '전남', '전북', '제주도', '충남', '충북'];
+            const FISHES = ['가자미', '갈치', '감성돔', '갑오징어', '고등어', '광어', '꽃게', '낙지', '노래미', '농어', '능성어', '대구', '도다리', '돌돔', '무늬오징어', '문어', '민어', '방어', '백조기', '벤자리', '벵에돔', '볼락', '부시리', '붉바리', '붕어', '삼치', '숭어', '열기', '오징어', '우럭', '전갱이', '주꾸미', '참돔', '참치', '한치', '홍감펭', '화살촉오징어'];
+            const WEEK = ['일', '월', '화', '수', '목', '금', '토'];
+            const sortLabel = { recommend: '추천순', price_low: '낮은 가격순', price_high: '높은 가격순', seats: '잔여석순' };
 
-        const SHIPS_DATA = [
-            { id: 1, name: '블랙이글스호', region: '인천', port: '인천연안부두', fish: ['갑오징어', '광어'], price: 90000, reviews: 1203, seats: 2, totalSeats: 18, hurry: true, coupon: true },
-            { id: 2, name: '씨마스터호', region: '인천', port: '인천연안부두', fish: ['갑오징어', '우럭'], price: 68000, reviews: 876, seats: 5, totalSeats: 16, hurry: false, coupon: false },
-            { id: 3, name: '하늘사랑호', region: '인천', port: '부두항', fish: ['갑오징어', '고등어'], price: 85000, reviews: 654, seats: 1, totalSeats: 14, hurry: true, coupon: true },
-            { id: 4, name: '바다정복호', region: '경남', port: '통영항', fish: ['참돔', '감성돔'], price: 120000, reviews: 541, seats: 8, totalSeats: 20, hurry: false, ad: true }
-        ];
+            const SHIPS_DATA = [
+                { id: 1, name: '블랙이글스호', region: '인천', port: '인천연안부두', fish: ['갑오징어', '광어'], price: 90000, reviews: 1203, seats: 2, totalSeats: 18, hurry: true, coupon: true },
+                { id: 2, name: '씨마스터호', region: '인천', port: '인천연안부두', fish: ['갑오징어', '우럭'], price: 68000, reviews: 876, seats: 5, totalSeats: 16, hurry: false, coupon: false },
+                { id: 3, name: '하늘사랑호', region: '인천', port: '부두항', fish: ['갑오징어', '고등어'], price: 85000, reviews: 654, seats: 1, totalSeats: 14, hurry: true, coupon: true },
+                { id: 4, name: '바다정복호', region: '경남', port: '통영항', fish: ['참돔', '감성돔'], price: 120000, reviews: 541, seats: 8, totalSeats: 20, hurry: false, ad: true }
+            ];
 
-        const POPULAR_RANKING = [
-            { rank: 1, word: '주꾸미', trend: 'minus' },
-            { rank: 2, word: '갑오징어', trend: 'minus' },
-            { rank: 3, word: '참돔 타이라바', trend: 'up' },
-            { rank: 4, word: '영흥도 진두항', trend: 'new' },
-            { rank: 5, word: '대천항 광어', trend: 'up' },
-            { rank: 6, word: '문어 낚시', trend: 'minus' },
-            { rank: 7, word: '먼바다 갈치', trend: 'down' },
-            { rank: 8, word: '체험 낚시', trend: 'up' }
-        ];
+            const INITIAL_RECENT = ['남당항 쭈꾸미', '인천 갑오징어', '블랙이글스호'];
+            const POPULAR_RANKING = [
+                { rank: 1, word: '주꾸미', trend: 'minus' },
+                { rank: 2, word: '갑오징어', trend: 'minus' },
+                { rank: 3, word: '참돔 타이라바', trend: 'up' },
+                { rank: 4, word: '영흥도 진두항', trend: 'new' },
+                { rank: 5, word: '대천항 광어', trend: 'up' },
+                { rank: 6, word: '문어 낚시', trend: 'minus' },
+                { rank: 7, word: '먼바다 갈치', trend: 'down' },
+                { rank: 8, word: '체험 낚시', trend: 'up' }
+            ];
 
-        const RECOMMENDED_TAGS = ['주꾸미', '갑오징어', '인천연안부두', '대천항', '참돔 다운샷', '초보 낚시', '야간 갈치', '패밀리 출조'];
-        const DEFAULT_SEARCH_STATE = { query: '', date: { year: 2026, month: 3, day: 28 }, people: 1, selectedRegions: [], selectedFishes: [] };
+            const RECOMMENDED_TAGS = ['주꾸미', '갑오징어', '인천연안부두', '대천항', '참돔 다운샷', '초보 낚시', '야간 갈치', '패밀리 출조'];
+            const DEFAULT_SEARCH_STATE = { query: '', date: { year: 2026, month: 3, day: 28 }, people: 1, selectedRegions: [], selectedFishes: [] };
 
-        // --- 공통 유틸리티 ---
-        const getChipStyle = (isActive) => `flex items-center gap-1.5 border rounded-full px-3 h-9 whitespace-nowrap text-sm font-bold shadow-sm transition-all cursor-pointer ${isActive ? 'border-[#3182F6] bg-white text-[#3182F6]' : 'border-gray-200 bg-white text-gray-400'}`;
+            // --- 유틸리티 ---
+            const getChipStyle = (isActive) => `flex items-center gap-1.5 border rounded-full px-3 h-9 whitespace-nowrap text-sm font-bold shadow-sm transition-all cursor-pointer ${isActive ? 'border-[#3182F6] bg-white text-[#3182F6]' : 'border-gray-200 bg-white text-gray-400'}`;
 
-        // --- 서브 컴포넌트 ---
-        const PRDItem = ({ label, children, highlight }) => (
-            <div className={`p-5 rounded-3xl transition-all mb-4 ${highlight ? 'bg-blue-600/10 border border-blue-500/30' : 'bg-white/5 border border-transparent'}`}>
-                <div className="flex items-center gap-3 mb-3">
-                    <div className={`w-2 h-2 rounded-full ${highlight ? 'bg-blue-400 animate-pulse' : 'bg-slate-600'}`} />
-                    <p className={`text-[15px] font-bold ${highlight ? 'text-blue-400' : 'text-slate-100'}`}>{label}</p>
-                </div>
-                <div className="text-slate-400 text-[13px] leading-relaxed space-y-3 font-medium">{children}</div>
-            </div>
-        );
+            const useDraggableScroll = (screen) => {
+                const ref = useRef(null);
+                useEffect(() => {
+                    const el = ref.current; if (!el) return;
+                    let isDown = false, startX, scrollLeft;
+                    const start = (e) => { isDown = true; el.classList.add('cursor-grabbing'); startX = (e.pageX || e.touches?.[0]?.pageX) - el.offsetLeft; scrollLeft = el.scrollLeft; };
+                    const stop = () => { isDown = false; el.classList.remove('cursor-grabbing'); };
+                    const move = (e) => { if (!isDown) return; const x = (e.pageX || e.touches?.[0]?.pageX) - el.offsetLeft; el.scrollLeft = scrollLeft - (x - startX) * 2; };
+                    el.addEventListener('mousedown', start); el.addEventListener('touchstart', start, { passive: false });
+                    el.addEventListener('mousemove', move); el.addEventListener('touchmove', move, { passive: false });
+                    el.addEventListener('mouseleave', stop); el.addEventListener('mouseup', stop); el.addEventListener('touchend', stop);
+                    return () => { el.removeEventListener('mousedown', start); el.removeEventListener('touchstart', start); el.removeEventListener('mousemove', move); el.removeEventListener('touchmove', move); el.removeEventListener('mouseleave', stop); el.removeEventListener('mouseup', stop); el.removeEventListener('touchend', stop); };
+                }, [screen]);
+                return ref;
+            };
 
-        const DescriptionPanel = ({ screen, emptyCase }) => (
-            <div className="animate-in fade-in duration-500">
-                {screen === 'home' && (
-                    <PRDItem label="예약 홈 정책">
-                        <p>ㄴ 통합 검색 : 날짜, 인원, 지역, 어종 설정을 한 구좌에서 처리.</p>
-                        <p>ㄴ 필터 휘발성 : 결과 페이지를 벗어나면 모든 조건은 즉시 초기화됨.</p>
-                    </PRDItem>
-                )}
-                {screen === 'search-input' && (
-                    <PRDItem label="검색 상세 정책">
-                        <p>ㄴ 프로모션 : 상단 고정 배너를 통해 핵심 마케팅 구좌 노출.</p>
-                        <p>ㄴ 기획전 랜딩 : 카테고리 클릭 시 검색 결과가 아닌 전용 기획전 페이지로 이동.</p>
-                    </PRDItem>
-                )}
-                {screen === 'result' && (
-                    <PRDItem label="검색 결과 정책 (v73)" highlight={!!emptyCase}>
-                        <p className="text-blue-400 font-bold">• 정보 표기 정책</p>
-                        <p>ㄴ 좌석 정보 : '좌석 {`{잔여}`}/{`{전체}`}' (예: 좌석 8/20) 형태로 직관화.</p>
-                        <p>ㄴ 마감임박 : 3석 이하 선박은 별도 배지 노출 및 Red 버튼으로 긴급도 부여.</p>
-                    </PRDItem>
-                )}
-            </div>
-        );
-
-        // --- 바텀시트 내부 컴포넌트 ---
-        const PeopleCounter = ({ initial, onConfirm }) => {
-            const [val, setVal] = useState(initial);
-            return (
-                <div className="flex flex-col h-full text-[#111827]">
-                    <div className="bg-[#F8F9FB] rounded-[24px] p-8 flex justify-between items-center my-8 shadow-inner">
-                        <span className="text-xl font-bold">인원</span>
-                        <div className="flex items-center gap-10">
-                            <button onClick={() => setVal(Math.max(1, val - 1))} className="w-12 h-12 bg-[#EEF1F5] rounded-full text-2xl font-bold text-[#5E6B7A]">−</button>
-                            <span className="text-3xl font-black min-w-[30px] text-center">{val}</span>
-                            <button onClick={() => setVal(Math.min(20, val + 1))} className="w-12 h-12 bg-[#EEF1F5] rounded-full text-2xl font-bold text-[#5E6B7A]">+</button>
-                        </div>
+            // --- 서브 컴포넌트 ---
+            const PRDItem = ({ label, children, highlight }) => (
+                <div className={`p-5 rounded-3xl transition-all mb-4 ${highlight ? 'bg-blue-600/10 border border-blue-500/30' : 'bg-white/5 border border-transparent'}`}>
+                    <div className="flex items-center gap-3 mb-3">
+                        <div className={`w-2 h-2 rounded-full ${highlight ? 'bg-blue-400 animate-pulse' : 'bg-slate-600'}`} />
+                        <p className={`text-[15px] font-bold ${highlight ? 'text-blue-400' : 'text-slate-100'}`}>{label}</p>
                     </div>
-                    <button onClick={() => onConfirm(val)} className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-black mt-auto shadow-lg">확인</button>
+                    <div className="text-slate-400 text-[13px] leading-relaxed space-y-3 font-medium">{children}</div>
                 </div>
             );
-        };
 
-        const MultiSelector = ({ items, initial, onConfirm }) => {
-            const [temp, setTemp] = useState(initial);
-            return (
-                <div className="flex flex-col h-full text-[#111827]">
-                    <div className="flex justify-start mb-4">
-                        <button className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full" onClick={() => setTemp(temp.length === items.length ? [] : [...items])}>{temp.length === items.length ? '전체해제' : '전체선택'}</button>
+            const DescriptionPanel = ({ screen, emptyCase }) => (
+                <div className="animate-in fade-in duration-500">
+                    <div className="mb-6 border-b border-white/5 pb-4">
+                        <h3 className="text-white text-[18px] font-black uppercase tracking-tight">설계 요구사항 검증</h3>
                     </div>
-                    <div className="grid grid-cols-4 gap-2 pb-4">
-                        {items.map(item => (
-                            <div key={item} onClick={() => setTemp(prev => prev.includes(item) ? prev.filter(x => x !== item) : [...prev, item])} className={`h-11 rounded-xl border flex items-center justify-center text-[13px] font-bold transition-all ${temp.includes(item) ? 'border-[#3F5EEA] bg-[#EEF2FF] text-[#3F5EEA]' : 'border-gray-200 bg-white text-gray-500'}`}>{item}</div>
-                        ))}
-                    </div>
-                    <button onClick={() => onConfirm(temp)} className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-black mt-auto">적용</button>
+                    {screen === 'home' && (
+                        <PRDItem label="예약 홈 정책">
+                            <p>ㄴ 통합 검색 : 날짜, 인원, 지역, 어종 설정을 한 구좌에서 처리.</p>
+                            <p>ㄴ 필터 휘발성 : 결과 페이지를 벗어나면 모든 조건은 즉시 초기화됨.</p>
+                        </PRDItem>
+                    )}
+                    {screen === 'search-input' && (
+                        <PRDItem label="검색 상세 정책">
+                            <p>ㄴ 프로모션 : 상단 고정 배너를 통해 핵심 마케팅 구좌 노출.</p>
+                            <p>ㄴ 기획전 랜딩 : 카테고리 클릭 시 검색 결과가 아닌 전용 기획전 페이지로 이동.</p>
+                        </PRDItem>
+                    )}
+                    {screen === 'result' && (
+                        <PRDItem label="검색 결과 정책 (v73)" highlight={!!emptyCase}>
+                            <p className="text-blue-400 font-bold">• 정보 표기 정책</p>
+                            <p>ㄴ 좌석 정보 : '좌석 {`{잔여}`}/{`{전체}`}' (예: 좌석 8/20) 형태로 직관화.</p>
+                            <p>ㄴ 마감임박 : 3석 이하 선박은 별도 배지 노출 및 Red 버튼으로 긴급도 부여.</p>
+                        </PRDItem>
+                    )}
                 </div>
             );
-        };
 
-        // --- 메인 앱 ---
-        const App = () => {
-            const [screen, setScreen] = useState('home');
-            const [previousScreen, setPreviousScreen] = useState('home');
-            const [isBsOpen, setIsBsOpen] = useState(null);
-            const [sortOrder, setSortOrder] = useState('recommend');
-            const [recentKeywords, setRecentKeywords] = useState(INITIAL_RECENT);
-            const [promotionTopic, setPromotionTopic] = useState('');
-            const [searchState, setSearchState] = useState(DEFAULT_SEARCH_STATE);
-            const [searchSource, setSearchSource] = useState('filter');
-
-            const formattedDate = (d) => `${d.month}/${d.day}(${WEEK[new Date(d.year, d.month - 1, d.day).getDay()]})`;
-            const displayLabel = (selected, all, defaultLabel) => { if (selected.length === 0 || selected.length === all.length) return defaultLabel; if (selected.length === 1) return selected[0]; return `${selected[0]} 외 ${selected.length - 1}`; };
-
-            const { filteredShips, queryOnlyShips, emptyCase } = useMemo(() => {
-                const queryOnly = SHIPS_DATA.filter(ship => { const q = searchState.query.toLowerCase().trim(); if (!q) return true; return ship.name.toLowerCase().includes(q) || ship.region.toLowerCase().includes(q) || ship.port.toLowerCase().includes(q); });
-                const filtered = queryOnly.filter(ship => { if (searchSource === 'filter' || searchSource === 'query') { const regMatch = searchState.selectedRegions.length === 0 || searchState.selectedRegions.includes(ship.region); const fishMatch = searchState.selectedFishes.length === 0 || ship.fish.some(f => searchState.selectedFishes.includes(f)); return regMatch && fishMatch; } return true; });
-                const sorted = [...filtered].sort((a, b) => { if (sortOrder === 'price_low') return a.price - b.price; if (sortOrder === 'price_high') return b.price - a.price; if (sortOrder === 'seats') return b.seats - a.seats; return (a.ad === b.ad) ? b.reviews - a.reviews : a.ad ? -1 : 1; });
-                return { filteredShips: sorted, queryOnlyShips: queryOnly, emptyCase: sorted.length === 0 ? (searchState.query && queryOnly.length === 0 ? 'no-query-match' : (searchState.query ? 'filter-mismatch' : 'no-filter-match')) : null };
-            }, [searchState, searchSource, sortOrder]);
-
-            const executeSearch = (q) => { const t = q.trim(); if (t) setRecentKeywords(p => [t, ...p.filter(k => k !== t)].slice(0, 10)); setSearchState(p => ({ ...p, query: t })); setSearchSource('query'); setPreviousScreen('search-input'); setScreen('result'); };
-            const handleBack = () => { if (screen === 'result' || screen === 'promotion') setScreen(previousScreen); else if (screen === 'search-input') setScreen('home'); setSearchState(DEFAULT_SEARCH_STATE); };
-            const closeBs = () => setIsBsOpen(null);
-
-            return (
-                <div className="flex min-h-screen items-start justify-center bg-[#090b0e] p-6 text-[#111827]">
-                    {/* 좌측 PRD 패널 */}
-                    <div className="hidden lg:block w-[500px] bg-[#0f172a] p-10 rounded-[44px] shadow-2xl mr-8 h-[915px] border border-white/10 relative overflow-hidden">
-                        <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-8 text-white"><FileText size={32} className="text-blue-500" /><h2 className="text-xl font-black tracking-tight uppercase">기능 설계서 (PRD)</h2></div>
-                        <div className="h-[calc(100%-100px)] overflow-y-auto no-scrollbar"><DescriptionPanel screen={screen} emptyCase={emptyCase} /></div>
-                    </div>
-
-                    {/* 모바일 폰 프레임 */}
-                    <div className="mobile-frame relative h-[915px] w-[412px] overflow-hidden bg-white rounded-[56px] border-[14px] border-[#111] flex flex-col flex-shrink-0">
-                        <div className="h-10 px-8 flex justify-between items-center text-[12px] font-bold bg-white z-50"><span>9:41</span><div className="flex gap-2 items-center"><Waves size={14}/><Bell size={14}/><div className="w-6 h-3 border border-black rounded-sm flex items-center justify-center text-[7px] font-black">100</div></div></div>
-                        
-                        <div className="flex-1 relative overflow-hidden bg-white">
-                            {screen === 'home' && (
-                                <div className="h-full flex flex-col no-scrollbar overflow-y-auto pb-24 px-4">
-                                    <header className="h-14 flex items-center justify-between mb-4"><h1 className="text-[24px] font-black tracking-tighter">예약.</h1><div className="flex gap-4 items-center"><Bookmark size={24}/><div className="w-8 h-8 rounded-full bg-[#DEE9FF] text-[#3182F6] flex items-center justify-center text-[11px] font-black">CH</div></div></header>
-                                    <div className="mt-2 flex items-center gap-4 text-[16px] font-bold text-[#A0A0A8] mb-6"><span className="text-[#222]">홈</span><span>탐색</span><span>조황</span></div>
-                                    <div className="bg-[#4662EA] rounded-[24px] p-3 text-white shadow-xl mb-8">
-                                        <div className="px-2 pt-1 pb-3 flex justify-between items-start"><div><h2 className="text-[20px] font-bold">전국 실시간 예약</h2><p className="text-[11px] opacity-80 mt-0.5">조건에 맞는 출조 선박을 찾아보세요.</p></div><Anchor size={32} className="opacity-20" /></div>
-                                        <div className="bg-white rounded-[14px] p-2.5 flex flex-col gap-1.5 text-[#111827]">
-                                            <div onClick={() => { setPreviousScreen('home'); setScreen('search-input'); }} className="bg-[#F7F8FA] border border-[#E8EBF2] rounded-xl flex items-center h-10 px-4 cursor-pointer text-[#A0A4AE] text-[13px] font-bold"><Search size={16} className="mr-2.5" />선박명. 지역. 어종. 항구명 검색하기</div>
-                                            <div className="flex gap-1.5"><div onClick={() => setIsBsOpen('people')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer text-[#111827] font-bold text-[13px]"><User size={16} className="text-[#4662EA]" />{searchState.people}명</div><div onClick={() => setIsBsOpen('region')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer text-[#111827] font-bold text-[13px]"><MapPin size={16} className="text-[#4662EA]" />{displayLabel(searchState.selectedRegions, REGIONS, '전체 지역')}</div></div>
-                                            <button onClick={() => { setSearchSource('filter'); setPreviousScreen('home'); setScreen('result'); }} className="w-full h-10 bg-[#2F3B8F] text-white rounded-lg font-bold text-[14px]">선박 검색</button>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {screen === 'search-input' && (
-                                <div className="h-full bg-white animate-in slide-in-from-bottom flex flex-col">
-                                    <header className="h-14 px-4 flex items-center gap-3 border-b border-slate-50"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full"><ChevronLeft size={24}/></button><div className="flex-1 h-11 bg-slate-100 rounded-[14px] flex items-center px-4 gap-3 text-slate-400"><Search size={20}/><input autoFocus placeholder="선박명. 지역. 어종 검색" className="bg-transparent flex-1 outline-none text-slate-900 font-bold" value={searchState.query} onChange={(e) => setSearchState(p => ({...p, query: e.target.value}))} onKeyDown={(e) => e.key === 'Enter' && executeSearch(searchState.query)} /></div></header>
-                                    <div className="flex-1 overflow-y-auto no-scrollbar">
-                                        <div className="h-[54px] bg-[#BF3D49] flex items-center justify-between px-6 text-white italic text-[13px] font-black"><p>어바웃피싱 릴 세척 서비스 ~40% 특가</p><div className="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center text-xl">⚙️</div></div>
-                                        <div className="px-6 py-8 space-y-12">
-                                            <section><h4 className="font-black mb-5">최근 검색어</h4><div className="flex gap-2 overflow-x-auto no-scrollbar">{recentKeywords.map(w => (<div key={w} onClick={() => executeSearch(w)} className="px-4 py-2 bg-white rounded-full border border-slate-200 text-[13px] font-bold text-slate-600 whitespace-nowrap">{w}</div>))}</div></section>
-                                            <section><h4 className="font-black mb-5">기획전 카테고리</h4><div className="flex gap-5 overflow-x-auto no-scrollbar">{['주꾸미', '갑오징어', '참돔', '우럭'].map((n, i) => (<div key={n} onClick={() => { setPromotionTopic(n); setScreen('promotion'); }} className="flex flex-col items-center gap-2.5 cursor-pointer"><div className="w-16 h-16 bg-[#F9F1F3] rounded-full flex items-center justify-center text-3xl shadow-sm border border-slate-50 relative overflow-hidden">{['🐙', '🦑', '🐠', '🐟'][i]}<span className="absolute bottom-0 right-0 bg-black/40 text-[7px] text-white font-black px-1 py-0.5 rounded-tl-sm">AD</span></div><span className="text-[11px] font-bold text-slate-500">{n}</span></div>))}</div></section>
-                                            <section><h4 className="font-black mb-5">급상승 검색어</h4><div className="grid grid-cols-2 gap-x-10 gap-y-5">{POPULAR_RANKING.slice(0, 8).map((item) => (<div key={item.word} onClick={() => executeSearch(item.word)} className="flex items-center justify-between py-1 border-b border-slate-50"><div className="flex items-center gap-3"><span className="text-[14px] font-black">{item.rank}</span><span className="text-[14px] font-bold text-slate-600 truncate">{item.word}</span></div>{item.trend === 'up' ? <ArrowUp size={12} className="text-red-500"/> : <Minus size={12} className="text-slate-300"/>}</div>))}</div></section>
-                                        </div>
-                                    </div>
-                                </div>
-                            )}
-
-                            {screen === 'result' && (
-                                <div className="h-full bg-slate-50 flex flex-col animate-in slide-in-from-right no-scrollbar pb-24">
-                                    <header className="h-14 px-4 flex items-center gap-3 bg-white"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full"><ChevronLeft size={24}/></button><div onClick={() => setScreen('search-input')} className="flex-1 h-10 bg-slate-100 rounded-[14px] flex items-center px-4 gap-3 cursor-pointer text-sm font-bold text-slate-900"><Search size={16} className="text-slate-400" />{searchState.query || "선박 검색하기"}</div></header>
-                                    <div className="flex-1 overflow-y-auto no-scrollbar">
-                                        {emptyCase ? (
-                                            <div className="flex flex-col items-center pt-20 px-8 text-center"><div className="w-16 h-16 bg-slate-100 rounded-full flex items-center justify-center mb-6 text-slate-300"><AlertCircle size={32} /></div><h3 className="text-lg font-black mb-2">검색 결과가 없습니다.</h3><p className="text-xs text-slate-400 mb-10 leading-relaxed">원하는 조건의 선박을 찾지 못했다면<br/>날짜나 지역을 변경하여 검색해 보세요.</p><button onClick={() => setScreen('home')} className="w-full bg-[#3182F6] text-white h-13 rounded-2xl font-black py-4">조건 변경하기</button></div>
-                                        ) : (
-                                            <div className="p-4 space-y-4">
-                                                <div className="flex justify-between items-center text-xs font-bold text-slate-500 mb-2 px-1"><span>검색한 선박 <span className="text-[#111827]">{filteredShips.length}건</span></span><div className="flex items-center gap-1 text-[#111827] cursor-pointer"><TrendingUp size={14} className="text-blue-500" />{sortLabel[sortOrder]}<ChevronDown size={14} /></div></div>
-                                                {filteredShips.map(ship => (
-                                                    <div key={ship.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[0.99] transition-all">
-                                                        <div className="flex p-4 gap-4"><div className="w-24 h-24 bg-slate-900 rounded-xl flex items-center justify-center text-4xl shadow-inner text-white">🚢</div><div className="flex-1 min-w-0"><div className="flex items-center gap-1.5 mb-1"><h4 className="font-black text-base truncate">{ship.name}</h4>{ship.hurry && <span className="bg-red-50 text-red-500 text-[9px] font-black px-1.5 py-0.5 rounded">마감임박</span>}</div><p className="text-[11px] text-slate-400 font-bold">{ship.region} · {ship.port}</p><div className="mt-2 font-black text-base">{ship.price.toLocaleString()}원~</div></div></div>
-                                                        <div className="px-4 py-3 bg-[#F8FAFC] border-t border-slate-50 flex items-center justify-between text-slate-400 text-[10px] font-bold">
-                                                            <div><span>조황 <span className="text-blue-500">{ship.reviews.toLocaleString()}건</span></span><span className="mx-2 text-slate-200">|</span><span>좌석 <span className="text-[#111827]">{ship.seats}/{ship.totalSeats}</span></span></div>
-                                                            <button className={`px-4 h-9 rounded-lg font-black text-white ${ship.seats <= 3 ? 'bg-[#FF5050]' : 'bg-[#3182F6]'}`}>{ship.seats <= 3 ? `잔여 ${ship.seats}석 · 예약` : '바로 예약'}</button>
-                                                        </div>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                </div>
-                            )}
-
-                            {screen === 'promotion' && (
-                                <div className="h-full bg-white animate-in slide-in-from-right no-scrollbar flex flex-col">
-                                    <header className="h-14 px-4 flex items-center gap-3 border-b border-slate-50 flex-shrink-0 text-[#111827]"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full active:bg-gray-100"><ChevronLeft size={24}/></button><h1 className="text-[18px] font-black">{promotionTopic} 기획전</h1></header>
-                                    <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-8">
-                                        <div className="aspect-[16/9] bg-blue-50 rounded-3xl flex flex-col items-center justify-center p-6 text-center border border-blue-100"><div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-4xl shadow-sm mb-4">🎁</div><h2 className="text-[20px] font-black text-[#2F3B8F]">{promotionTopic} 시즌 한정 특가</h2><p className="text-[13px] text-blue-600 mt-2 font-bold opacity-80">인기 선박 최대 30% 할인이 진행 중입니다.</p></div>
-                                        <div><h3 className="text-[17px] font-black mb-4">현재 예약 가능한 선박</h3><div className="space-y-4">{SHIPS_DATA.slice(0, 2).map(s => (<div key={s.id} onClick={() => { setSearchState(p => ({...p, query: promotionTopic})); setScreen('result'); }} className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm flex gap-4 cursor-pointer active:bg-slate-50"><div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-2xl text-white">🚢</div><div className="flex-1"><p className="text-[14px] font-black">{s.name}</p><p className="text-[11px] text-slate-400 font-bold mt-0.5">{s.region} · {s.port}</p><p className="text-[13px] font-black text-blue-600 mt-2">{s.price.toLocaleString()}원~</p></div></div>))}</div></div>
-                                    </div>
-                                </div>
-                            )}
-                        </div>
-
-                        <nav className="absolute bottom-0 left-0 right-0 flex h-[84px] items-start justify-around border-t border-[#E8E8ED] bg-white px-4 pt-2 z-[90] text-slate-400"><div onClick={resetAndGoHome} className="flex flex-col items-center gap-1 text-[#222]"><Navigation size={20}/><span className="text-[10px] font-black">홈</span></div><div className="flex flex-col items-center gap-1"><MessageCircle size={20}/><span className="text-[10px] font-bold">커뮤니티</span></div><div onClick={() => { setSearchSource('filter'); setScreen('result'); }} className="flex flex-col items-center gap-1 text-slate-400"><Calendar size={20}/><span className="text-[10px] font-bold">예약</span></div><div className="flex flex-col items-center gap-1"><Anchor size={20}/><span className="text-[10px] font-bold">중고장터</span></div><div className="flex flex-col items-center gap-1"><User size={20}/><span className="text-[10px] font-bold">쇼핑</span></div></nav>
-                        
-                        {isBsOpen && (
-                            <div className="absolute inset-0 z-[1000] flex items-end">
-                                <div className="absolute inset-0 bg-black/50 animate-in fade-in duration-200" onClick={closeBs} />
-                                <div className="relative w-full bg-white rounded-t-[32px] px-5 pt-4 pb-12 shadow-2xl h-auto min-h-[420px] flex flex-col animate-in slide-in-from-bottom duration-300">
-                                    <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4" />
-                                    <h3 className="text-[20px] font-bold text-center mb-6">{isBsOpen === 'region' ? '지역 선택' : isBsOpen === 'fish' ? '어종 선택' : isBsOpen === 'people' ? '인원 선택' : '출조 날짜 선택'}</h3>
-                                    <div className="flex-1 overflow-y-auto no-scrollbar">{isBsOpen === 'region' && <MultiSelector items={REGIONS} initial={searchState.selectedRegions} onConfirm={(v) => { setSearchState(p => ({...p, selectedRegions: v})); closeBs(); }} />}{isBsOpen === 'fish' && <MultiSelector items={FISHES} initial={searchState.selectedFishes} onConfirm={(v) => { setSearchState(p => ({...p, selectedFishes: v})); closeBs(); }} />}{isBsOpen === 'people' && <PeopleCounter initial={searchState.people} onConfirm={(v) => { setSearchState(p => ({...p, people: v})); closeBs(); }} />}</div>
-                                </div>
+            const PeopleCounter = ({ initial, onConfirm }) => {
+                const [val, setVal] = useState(initial);
+                return (
+                    <div className="flex flex-col h-full text-[#111827]">
+                        <div className="bg-[#F8F9FB] rounded-[24px] p-8 flex justify-between items-center my-8 shadow-inner">
+                            <span className="text-xl font-bold">인원</span>
+                            <div className="flex items-center gap-10">
+                                <button onClick={() => setVal(Math.max(1, val - 1))} className="w-12 h-12 bg-[#EEF1F5] rounded-full text-2xl font-bold text-[#5E6B7A]">−</button>
+                                <span className="text-3xl font-black min-w-[30px] text-center">{val}</span>
+                                <button onClick={() => setVal(Math.min(20, val + 1))} className="w-12 h-12 bg-[#EEF1F5] rounded-full text-2xl font-bold text-[#5E6B7A]">+</button>
                             </div>
-                        )}
+                        </div>
+                        <button onClick={() => onConfirm(val)} className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-black mt-auto shadow-lg">확인</button>
+                    </div>
+                );
+            };
+
+            const MultiSelector = ({ items, initial, onConfirm }) => {
+                const [temp, setTemp] = useState(initial);
+                const isAll = temp.length === items.length;
+                return (
+                    <div className="flex flex-col h-full text-[#111827]">
+                        <div className="flex justify-start mb-4">
+                            <button className="text-sm font-bold text-blue-600 bg-blue-50 px-3 py-1 rounded-full" onClick={() => setTemp(isAll ? [] : [...items])}>{isAll ? '전체해제' : '전체선택'}</button>
+                        </div>
+                        <div className="grid grid-cols-4 gap-2 pb-4">
+                            {items.map(item => (
+                                <div key={item} onClick={() => setTemp(prev => prev.includes(item) ? prev.filter(x => x !== item) : [...prev, item])} className={`h-11 rounded-xl border flex items-center justify-center text-[13px] font-bold transition-all ${temp.includes(item) ? 'border-[#3F5EEA] bg-[#EEF2FF] text-[#3F5EEA]' : 'border-gray-200 bg-white text-gray-500'}`}>{item}</div>
+                            ))}
+                        </div>
+                        <button onClick={() => onConfirm(temp)} className="w-full h-14 bg-[#3182F6] text-white rounded-2xl font-black mt-auto">적용</button>
+                    </div>
+                );
+            };
+
+            const DateSelector = ({ initial, onConfirm }) => {
+                const [sel, setSel] = useState(initial);
+                const dim = 31;
+                return (
+                    <div className="flex flex-col h-full no-scrollbar text-[#111827]">
+                        <div className="flex justify-between items-center mb-8 px-4">
+                            <button className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-slate-500"><ChevronLeft size={20} /></button>
+                            <div className="text-[18px] font-extrabold tracking-tight">2026년 3월</div>
+                            <button className="w-10 h-10 bg-gray-100 rounded-full flex items-center justify-center text-slate-500"><ChevronRight size={20} /></button>
+                        </div>
+                        <div className="grid grid-cols-7 text-center text-[13px] font-bold mb-6 px-1 text-slate-300">
+                            {WEEK.map(d => (<div key={d} className={d === '일' ? 'text-red-500' : d === '토' ? 'text-blue-600' : ''}>{d}</div>))}
+                        </div>
+                        <div className="grid grid-cols-7 gap-y-2 text-center px-1 text-[#111827]">
+                            {[null, null, null, null, null].map((_, i) => <div key={i} />)}
+                            {Array.from({ length: dim }).map((_, i) => { 
+                                const d = i + 1; const blocked = d < 28;
+                                return <div key={d} onClick={() => !blocked && setSel({...sel, day: d})} className={`h-11 w-11 mx-auto flex items-center justify-center font-extrabold rounded-full cursor-pointer transition-all ${blocked ? 'text-gray-200 opacity-40 text-slate-200' : sel.day === d ? 'bg-[#3182F6] text-white shadow-lg' : 'text-slate-800 hover:bg-slate-50'}`}>{d}</div>
+                            })}
+                        </div>
+                        <button onClick={() => onConfirm(sel)} className="w-full h-14 bg-[#3182F6] text-white rounded-[20px] font-black mt-8 text-base shadow-lg shadow-blue-100">선택 완료</button>
+                    </div>
+                );
+            };
+
+            const EmptyState = ({ type, query, count, onAction }) => (
+                <div className="flex flex-col items-center pt-20 px-8 text-center text-[#111827]">
+                    <div className="w-16 h-16 bg-slate-50 rounded-full flex items-center justify-center mb-6 border border-slate-100 text-slate-200"><AlertCircle size={32} /></div>
+                    {type === 'no-query-match' ? (
+                        <div>
+                            <h3 className="text-[19px] font-black mb-2">검색 결과가 없습니다.</h3>
+                            <p className="text-[12px] text-slate-400 mb-8 leading-relaxed">원하는 선박을 찾지 못했다면<br />항구명과 선박명을 함께 검색해 보세요.</p>
+                            <button onClick={() => onAction('request')} className="w-full h-13 bg-[#3182F6] text-white rounded-xl font-black shadow-md py-3.5 text-sm active:scale-95 flex items-center justify-center gap-2 px-6"><Plus size={16}/>선박 추가 요청하기</button>
+                        </div>
+                    ) : (
+                        <div>
+                            <h3 className="text-[19px] font-black mb-2">'{query}' 선박이 {count}건 있어요.</h3>
+                            <p className="text-[12px] text-slate-400 mb-8 leading-relaxed">설정하신 필터 조건에 맞는 선박이 없습니다.<br />필터를 변경하여 확인해 보세요.</p>
+                            <button onClick={() => onAction('reset-filter')} className="w-full h-13 border border-[#3182F6] text-[#3182F6] bg-blue-50/50 rounded-xl font-black py-3.5 text-sm active:scale-95 flex items-center justify-center gap-2 px-6"><RefreshCcw size={16}/>필터 초기화하기</button>
+                        </div>
+                    )}
+                </div>
+            );
+
+            // --- Main App Component ---
+            const App = () => {
+                const [screen, setScreen] = useState('home');
+                const [previousScreen, setPreviousScreen] = useState('home');
+                const [isBsOpen, setIsBsOpen] = useState(null);
+                const [sortOrder, setSortOrder] = useState('recommend');
+                const [recentKeywords, setRecentKeywords] = useState(INITIAL_RECENT);
+                const [promotionTopic, setPromotionTopic] = useState('');
+                const [searchState, setSearchState] = useState(DEFAULT_SEARCH_STATE);
+                const [searchSource, setSearchSource] = useState('filter');
+
+                const homeSpecialRef = useDraggableScroll(screen);
+                const searchRecentRef = useDraggableScroll(screen);
+                const resultFilterRef = useDraggableScroll(screen);
+
+                const { filteredShips, queryOnlyShips, emptyCase } = useMemo(() => {
+                    const queryOnly = SHIPS_DATA.filter(ship => { const q = searchState.query.toLowerCase().trim(); if (!q) return true; return ship.name.toLowerCase().includes(q) || ship.region.toLowerCase().includes(q) || ship.port.toLowerCase().includes(q); });
+                    const filtered = queryOnly.filter(ship => { if (searchSource === 'filter' || searchSource === 'query') { const regMatch = searchState.selectedRegions.length === 0 || searchState.selectedRegions.includes(ship.region); const fishMatch = searchState.selectedFishes.length === 0 || ship.fish.some(f => searchState.selectedFishes.includes(f)); return regMatch && fishMatch; } return true; });
+                    const sorted = [...filtered].sort((a, b) => { if (sortOrder === 'price_low') return a.price - b.price; if (sortOrder === 'price_high') return b.price - a.price; if (sortOrder === 'seats') return b.seats - a.seats; return (a.ad === b.ad) ? b.reviews - a.reviews : a.ad ? -1 : 1; });
+                    return { filteredShips: sorted, queryOnlyShips: queryOnly, emptyCase: sorted.length === 0 ? (searchState.query && queryOnly.length === 0 ? 'no-query-match' : (searchState.query ? 'filter-mismatch' : 'no-filter-match')) : null };
+                }, [searchState, searchSource, sortOrder]);
+
+                const executeSearch = (q) => { const t = q.trim(); if (t) setRecentKeywords(p => [t, ...p.filter(k => k !== t)].slice(0, 10)); setSearchState(p => ({ ...p, query: t })); setSearchSource('query'); setPreviousScreen('search-input'); setScreen('result'); };
+                const handleBack = () => { if (screen === 'result' || screen === 'promotion') setScreen(previousScreen); else if (screen === 'search-input') setScreen('home'); setSearchState(DEFAULT_SEARCH_STATE); };
+                const resetAndGoHome = () => { setSearchState(DEFAULT_SEARCH_STATE); setScreen('home'); };
+                const closeBs = () => setIsBsOpen(null);
+
+                return (
+                    <div className="flex min-h-screen items-start justify-center bg-[#090b0e] p-6 text-[#111827]">
+                        <div className="hidden lg:block w-[500px] bg-[#0f172a] p-10 rounded-[44px] shadow-2xl mr-8 h-[915px] border border-white/10 relative overflow-hidden">
+                            <div className="flex items-center gap-4 mb-10 border-b border-white/5 pb-8 text-white"><FileText size={32} className="text-blue-500" /><h2 className="text-xl font-black tracking-tight uppercase tracking-tighter">기능 설계서 (PRD)</h2></div>
+                            <div className="h-[calc(100%-100px)] overflow-y-auto no-scrollbar"><DescriptionPanel screen={screen} emptyCase={emptyCase} /></div>
+                        </div>
+
+                        <div className="mobile-frame relative h-[915px] w-[412px] overflow-hidden bg-white rounded-[56px] border-[14px] border-[#111] flex flex-col flex-shrink-0">
+                            <div className="h-10 px-8 flex justify-between items-center text-[12px] font-bold bg-white z-50"><span>9:41</span><div className="flex gap-2 items-center text-[#111827]"><Waves size={14}/><Bell size={14}/><div className="w-6 h-3 border border-black rounded-sm flex items-center justify-center text-[7px] font-black text-black">100</div></div></div>
+                            
+                            <div className="flex-1 relative overflow-hidden bg-white">
+                                {screen === 'home' && (
+                                    <div className="h-full flex flex-col no-scrollbar overflow-y-auto pb-24 px-4">
+                                        <header className="h-14 flex items-center justify-between mb-4"><h1 className="text-[24px] font-black tracking-tighter text-black">예약.</h1><div className="flex gap-4 items-center"><Bookmark size={24}/><div className="w-8 h-8 rounded-full bg-[#DEE9FF] text-[#3182F6] flex items-center justify-center text-[11px] font-black">CH</div></div></header>
+                                        <div className="mt-2 flex items-center gap-4 text-[16px] font-bold text-[#A0A0A8] mb-6"><span className="text-[#222]">홈</span><span>탐색</span><span>조황</span></div>
+                                        <div className="bg-[#4662EA] rounded-[24px] p-3 text-white shadow-xl mb-8">
+                                            <div className="px-2 pt-1 pb-3 flex justify-between items-start"><div><h2 className="text-[20px] font-bold text-white">전국 실시간 예약</h2><p className="text-[11px] opacity-80 mt-0.5 text-white">조건에 맞는 출조 선박을 찾아보세요.</p></div><Anchor size={32} className="opacity-20 text-white" /></div>
+                                            <div className="bg-white rounded-[14px] p-2.5 flex flex-col gap-1.5 text-[#111827]">
+                                                <div onClick={() => { setPreviousScreen('home'); setScreen('search-input'); }} className="bg-[#F7F8FA] border border-[#E8EBF2] rounded-xl flex items-center h-10 px-4 cursor-pointer text-[#A0A4AE] text-[13px] font-bold"><Search size={16} className="mr-2.5" />선박명. 지역. 어종. 항구명 검색하기</div>
+                                                <div className="flex gap-1.5"><div onClick={() => setIsBsOpen('people')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer text-[#111827] font-bold text-[13px]"><User size={16} className="text-[#4662EA]" />{searchState.people}명</div><div onClick={() => setIsBsOpen('region')} className="flex-1 bg-[#F7F8FA] border border-[#E8EBF2] p-2.5 h-10 rounded-lg flex items-center gap-2 cursor-pointer text-[#111827] font-bold text-[13px]"><MapPin size={16} className="text-[#4662EA]" />{displayLabel(searchState.selectedRegions, REGIONS, '전체 지역')}</div></div>
+                                                <button onClick={() => { setSearchSource('filter'); setPreviousScreen('home'); setScreen('result'); }} className="w-full h-10 bg-[#2F3B8F] text-white rounded-lg font-bold text-[14px] text-white">선박 검색</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {screen === 'search-input' && (
+                                    <div className="h-full bg-white animate-in slide-in-from-bottom flex flex-col">
+                                        <header className="h-14 px-4 flex items-center gap-3 border-b border-slate-50"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full"><ChevronLeft size={24} className="text-black" /></button><div className="flex-1 h-11 bg-slate-100 rounded-[14px] flex items-center px-4 gap-3 text-slate-400"><Search size={20}/><input autoFocus placeholder="선박명. 지역. 어종 검색" className="bg-transparent flex-1 outline-none text-slate-900 font-bold" value={searchState.query} onChange={(e) => setSearchState(p => ({...p, query: e.target.value}))} onKeyDown={(e) => e.key === 'Enter' && executeSearch(searchState.query)} /></div></header>
+                                        <div className="flex-1 overflow-y-auto no-scrollbar">
+                                            <div className="h-[54px] bg-[#BF3D49] flex items-center justify-between px-6 text-white italic text-[13px] font-black shadow-inner"><p>어바웃피싱 릴 세척 서비스 ~40% 특가</p><div className="w-10 h-10 bg-black/10 rounded-full flex items-center justify-center text-xl">⚙️</div></div>
+                                            <div className="px-6 py-8 space-y-12 text-[#111827]">
+                                                <section><h4 className="font-black mb-5">최근 검색어</h4><div className="flex gap-2 overflow-x-auto no-scrollbar">{recentKeywords.map(w => (<div key={w} onClick={() => executeSearch(w)} className="px-4 py-2 bg-white rounded-full border border-slate-200 text-[13px] font-bold text-slate-600 whitespace-nowrap cursor-pointer active:bg-blue-50">{w}</div>))}</div></section>
+                                                <section><h4 className="font-black mb-5">기획전 카테고리</h4><div className="flex gap-5 overflow-x-auto no-scrollbar">{['주꾸미', '갑오징어', '참돔', '우럭'].map((n, i) => (<div key={n} onClick={() => { setPromotionTopic(n); setScreen('promotion'); }} className="flex flex-col items-center gap-2.5 cursor-pointer active:scale-95 transition-transform"><div className="w-16 h-16 bg-[#F9F1F3] rounded-full flex items-center justify-center text-3xl shadow-sm border border-slate-50 relative overflow-hidden">{['🐙', '🦑', '🐠', '🐟'][i]}<span className="absolute bottom-0 right-0 bg-black/40 text-[7px] text-white font-black px-1 py-0.5 rounded-tl-sm text-white">AD</span></div><span className="text-[11px] font-bold text-slate-500">{n}</span></div>))}</div></section>
+                                                <section><h4 className="font-black mb-5">급상승 검색어</h4><div className="grid grid-cols-2 gap-x-10 gap-y-5">{POPULAR_RANKING.slice(0, 8).map((item) => (<div key={item.word} onClick={() => executeSearch(item.word)} className="flex items-center justify-between py-1 border-b border-slate-50 cursor-pointer active:bg-slate-50"><div className="flex items-center gap-3"><span className="text-[14px] font-black">{item.rank}</span><span className="text-[14px] font-bold text-slate-600 truncate">{item.word}</span></div>{item.trend === 'up' ? <ArrowUp size={12} className="text-red-500"/> : <Minus size={12} className="text-slate-300"/>}</div>))}</div></section>
+                                            </div>
+                                        </div>
+                                    </div>
+                                )}
+
+                                {screen === 'result' && (
+                                    <div className="h-full bg-slate-50 flex flex-col animate-in slide-in-from-right no-scrollbar pb-24 text-[#111827]">
+                                        <header className="h-14 px-4 flex items-center gap-3 bg-white shadow-sm"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full"><ChevronLeft size={24}/></button><div onClick={() => setScreen('search-input')} className="flex-1 h-10 bg-slate-100 rounded-[14px] flex items-center px-4 gap-3 cursor-pointer text-sm font-bold text-slate-900"><Search size={16} className="text-slate-400" />{searchState.query || "선박 검색하기"}</div></header>
+                                        <div className="flex-1 overflow-y-auto no-scrollbar">
+                                            {emptyCase ? <EmptyState type={emptyCase} query={searchState.query} count={queryOnlyShips.length} onAction={(act) => { if (act === 'reset-filter') setSearchState(DEFAULT_SEARCH_STATE); else if (act === 'view-all') setSearchState(DEFAULT_SEARCH_STATE); }} /> : (
+                                                <div className="p-4 space-y-4">
+                                                    <div className="flex justify-between items-center text-xs font-bold text-slate-500 mb-2 px-1"><span>검색한 선박 <span className="text-[#111827]">{filteredShips.length}건</span></span><div onClick={() => setIsBsOpen('sort')} className="flex items-center gap-1 text-[#111827] cursor-pointer"><TrendingUp size={14} className="text-blue-500" />{sortLabel[sortOrder]}<ChevronDown size={14} /></div></div>
+                                                    {filteredShips.map(ship => (
+                                                        <div key={ship.id} className="bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden active:scale-[0.99] transition-all text-[#111827]">
+                                                            <div className="flex p-4 gap-4"><div className="w-24 h-24 bg-slate-900 rounded-xl flex items-center justify-center text-4xl shadow-inner text-white">🚢</div><div className="flex-1 min-w-0"><div className="flex items-center gap-1.5 mb-1"><h4 className="font-black text-base truncate">{ship.name}</h4>{ship.hurry && <span className="bg-red-50 text-red-500 text-[9px] font-black px-1.5 py-0.5 rounded">마감임박</span>}</div><p className="text-[11px] text-slate-400 font-bold">{ship.region} · {ship.port}</p><div className="mt-2 font-black text-base">{ship.price.toLocaleString()}원~</div></div></div>
+                                                            <div className="px-4 py-3 bg-[#F8FAFC] border-t border-slate-50 flex items-center justify-between text-slate-400 text-[10px] font-bold">
+                                                                <div><span>조황 <span className="text-blue-500">{ship.reviews.toLocaleString()}건</span></span><span className="mx-2 text-slate-200">|</span><span>좌석 <span className="text-[#111827]">{ship.seats}/{ship.totalSeats}</span></span></div>
+                                                                <button className={`px-4 h-9 rounded-lg font-black text-white ${ship.seats <= 3 ? 'bg-[#FF5050]' : 'bg-[#3182F6]'}`}>{ship.seats <= 3 ? `잔여 ${ship.seats}석 · 예약` : '바로 예약'}</button>
+                                                            </div>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                )}
+
+                                {screen === 'promotion' && (
+                                    <div className="h-full bg-white animate-in slide-in-from-right no-scrollbar flex flex-col text-[#111827]">
+                                        <header className="h-14 px-4 flex items-center gap-3 border-b border-slate-50 flex-shrink-0 text-[#111827]"><button onClick={handleBack} className="p-2 bg-slate-50 rounded-full"><ChevronLeft size={24} className="text-black" /></button><h1 className="text-[18px] font-black">{promotionTopic} 기획전</h1></header>
+                                        <div className="flex-1 overflow-y-auto no-scrollbar p-6 space-y-8">
+                                            <div className="aspect-[16/9] bg-blue-50 rounded-3xl flex flex-col items-center justify-center p-6 text-center border border-blue-100"><div className="w-16 h-16 bg-white rounded-full flex items-center justify-center text-4xl shadow-sm mb-4">🎁</div><h2 className="text-[20px] font-black text-[#2F3B8F]">{promotionTopic} 시즌 한정 특가</h2><p className="text-[13px] text-blue-600 mt-2 font-bold opacity-80">인기 선박 최대 30% 할인이 진행 중입니다.</p></div>
+                                            <div><h3 className="text-[17px] font-black mb-4">현재 예약 가능한 선박</h3><div className="space-y-4">{SHIPS_DATA.slice(0, 2).map(s => (<div key={s.id} onClick={() => { setSearchState(p => ({...p, query: promotionTopic})); setScreen('result'); }} className="bg-white border border-slate-100 p-4 rounded-2xl shadow-sm flex gap-4 cursor-pointer active:bg-slate-50"><div className="w-16 h-16 bg-slate-900 rounded-xl flex items-center justify-center text-2xl text-white">🚢</div><div className="flex-1"><p className="text-[14px] font-black">{s.name}</p><p className="text-[11px] text-slate-400 font-bold mt-0.5">{s.region} · {s.port}</p><p className="text-[13px] font-black text-blue-600 mt-2">{s.price.toLocaleString()}원~</p></div></div>))}</div></div>
+                                        </div>
+                                    </div>
+                                )}
+                            </div>
+
+                            <nav className="absolute bottom-0 left-0 right-0 flex h-[84px] items-start justify-around border-t border-[#E8E8ED] bg-white px-4 pt-2 z-[90] text-slate-400"><div onClick={resetAndGoHome} className="flex flex-col items-center gap-1 text-[#222] cursor-pointer"><Navigation size={20}/><span className="text-[10px] font-black">홈</span></div><div className="flex flex-col items-center gap-1"><MessageCircle size={20}/><span className="text-[10px] font-bold">커뮤니티</span></div><div onClick={() => { setScreen('result'); }} className="flex flex-col items-center gap-1 text-slate-400 cursor-pointer"><Calendar size={20}/><span className="text-[10px] font-bold">예약</span></div><div className="flex flex-col items-center gap-1"><Anchor size={20}/><span className="text-[10px] font-bold">중고장터</span></div><div className="flex flex-col items-center gap-1"><User size={20}/><span className="text-[10px] font-bold">쇼핑</span></div></nav>
+                            
+                            {isBsOpen && (
+                                <div className="absolute inset-0 z-[1000] flex items-end">
+                                    <div className="absolute inset-0 bg-black/50 animate-in fade-in duration-200" onClick={closeBs} />
+                                    <div className="relative w-full bg-white rounded-t-[32px] px-5 pt-4 pb-12 shadow-2xl h-auto min-h-[420px] flex flex-col animate-in slide-in-from-bottom duration-300">
+                                        <div className="w-10 h-1 bg-gray-200 rounded-full mx-auto mb-4 text-slate-300" /><h3 className="text-[20px] font-bold text-center mb-6 text-[#111827]">{isBsOpen === 'region' ? '지역 선택' : isBsOpen === 'fish' ? '어종 선택' : isBsOpen === 'people' ? '인원 선택' : '정렬 기준'}</h3>
+                                        <div className="flex-1 overflow-y-auto no-scrollbar">
+                                            {isBsOpen === 'region' && <MultiSelector items={REGIONS} initial={searchState.selectedRegions} onConfirm={(v) => { setSearchState(p => ({...p, selectedRegions: v})); closeBs(); }} />}
+                                            {isBsOpen === 'fish' && <MultiSelector items={FISHES} initial={searchState.selectedFishes} onConfirm={(v) => { setSearchState(p => ({...p, selectedFishes: v})); closeBs(); }} />}
+                                            {isBsOpen === 'people' && <PeopleCounter initial={searchState.people} onConfirm={(v) => { setSearchState(p => ({...p, people: v})); closeBs(); }} />}
+                                            {isBsOpen === 'sort' && (
+                                                <div className="flex flex-col gap-3 px-4 pb-4">
+                                                    {Object.entries(sortLabel).map(([key, label]) => (
+                                                        <div key={key} onClick={() => { setSortOrder(key); closeBs(); }} className={`flex items-center justify-between h-14 px-5 rounded-2xl border transition-all cursor-pointer ${sortOrder === key ? 'border-blue-500 bg-blue-50 text-blue-600 font-black' : 'border-gray-100 bg-white text-slate-600'}`}>
+                                                            <span className="text-[15px]">{label}</span>{sortOrder === key && <CheckCircle2 size={20} className="text-blue-600" />}
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
                     </div>
                 </div>
             );
-        };
+            };
 
-        const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<App />);
+            const root = ReactDOM.createRoot(document.getElementById('root'));
+            root.render(<App />);
+        })();
     </script>
 </body>
 </html>
