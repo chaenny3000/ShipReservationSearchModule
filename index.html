@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="UTF-8">
-<title>어바웃피싱 · 예약검색 스토리보드</title>
+<title>어바웃피싱 · 예약검색 스토리보드 v4.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -19,7 +19,11 @@ html,body{height:100%;font-family:var(--fn);color:#1A1A2E;background:#fff}
 /* BODY */
 #body{display:flex;flex:1;overflow:hidden}
 /* LEFT */
-#left{width:300px;flex-shrink:0;border-right:1px solid #E5E7EB;background:#F8F9FC;display:flex;flex-direction:column;align-items:center;justify-content:center;position:sticky;top:0;height:calc(100vh - 48px);overflow:hidden}
+#left{width:300px;flex-shrink:0;border-right:none;background:#F8F9FC;display:flex;flex-direction:column;align-items:center;justify-content:center;position:sticky;top:0;height:calc(100vh - 48px);overflow:hidden;min-width:220px;max-width:600px}
+#resizer{width:5px;flex-shrink:0;cursor:col-resize;background:transparent;position:relative;z-index:50;border-right:1px solid #E5E7EB;transition:background .15s}
+#resizer:hover{background:rgba(61,78,255,.1)}
+#resizer::after{content:'';position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:3px;height:48px;background:#D1D5DB;border-radius:2px}
+#resizer:hover::after{background:#3D4EFF}
 .plb{font-size:10px;color:#9CA3AF;margin-bottom:10px;letter-spacing:.5px;text-transform:uppercase}
 #pw{position:relative;width:240px;height:520px;background:#111827;border-radius:38px;box-shadow:0 16px 48px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.08);overflow:hidden}
 #pw::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:90px;height:24px;background:#111827;border-radius:0 0 14px 14px;z-index:10;pointer-events:none}
@@ -905,6 +909,7 @@ updLabels();
     </div>
     <div id="ws">화면 섹션을 클릭하면 이동합니다</div>
   </aside>
+  <div id="resizer"></div>
   <!-- RIGHT -->
   <main id="right">
     <!-- ② 화면 플로우 -->
@@ -21006,5 +21011,54 @@ function delC(sid,cid){
   for(var i=0;i<d.length;i++){var e=d[i];if(e.id&&e.id.length>2&&e.id[0]==='c'&&e.id[1]==='l')renderC(e.id.substring(2));}
 })();
 })();
+
+// ── 좌측 패널 리사이즈 ──
+(function(){
+  var resizer = document.getElementById('resizer');
+  var left = document.getElementById('left');
+  var pw = document.getElementById('pw');
+  var pf = document.getElementById('pf');
+  if(!resizer||!left) return;
+  
+  var isDown = false, startX = 0, startW = 0;
+  
+  resizer.addEventListener('mousedown', function(e){
+    isDown = true;
+    startX = e.clientX;
+    startW = left.offsetWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    resizer.style.background = 'rgba(61,78,255,.15)';
+    e.preventDefault();
+  });
+  
+  document.addEventListener('mousemove', function(e){
+    if(!isDown) return;
+    var delta = e.clientX - startX;
+    var newW = Math.max(220, Math.min(600, startW + delta));
+    left.style.width = newW + 'px';
+    
+    // 폰 목업 크기 조정
+    if(pw && pf) {
+      // 패널 너비에 따라 스케일 계산
+      var scale = Math.min(0.85, (newW - 40) / 375);
+      scale = Math.max(0.4, scale);
+      var pwW = Math.round(375 * scale * 1.025);
+      var pwH = Math.round(812 * scale * 1.025);
+      pw.style.width = pwW + 'px';
+      pw.style.height = pwH + 'px';
+      pf.style.zoom = scale;
+    }
+  });
+  
+  document.addEventListener('mouseup', function(){
+    if(!isDown) return;
+    isDown = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    resizer.style.background = '';
+  });
+})();
+
 </script>
 </body></html>
