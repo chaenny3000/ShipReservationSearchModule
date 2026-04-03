@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="UTF-8">
-<title>어바웃피싱 · 예약검색 스토리보드 v25.0</title>
+<title>어바웃피싱 · 예약검색 스토리보드 v26.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -52,37 +52,12 @@ html,body{height:100%;font-family:var(--fn);color:#1A1A2E;background:#fff}
 .adm .cbe,.adm .cbd{display:inline}
 .cbe,.cbd{font-size:10px;border:none;background:none;cursor:pointer;color:#D1D5DB;padding:0;font-family:var(--fn);display:none}
 .cbe:hover{color:var(--bl)}.cbd:hover{color:#EF4444}
-tbody tr{position:relative}
-.del-btn{display:none;position:absolute;left:-26px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:#FEE2E2;color:#EF4444;font-size:13px;cursor:pointer;align-items:center;justify-content:center;font-weight:700;z-index:20;padding:0;line-height:1}
-.add-row-wrap{display:none;padding:6px 14px;cursor:pointer;color:#3D4EFF;font-size:12px;font-weight:600;background:#F0F4FF;border:1px dashed #3D4EFF;border-radius:0 0 8px 8px;text-align:center}
-.editable{outline:none;display:block;width:100%}
-.adm-on .del-btn{display:flex}
-.adm-on .add-row-wrap{display:block}
-.adm-on .editable:focus{background:rgba(61,78,255,.07);border-radius:3px}
-.adm-on table{overflow:visible!important}
-.adm-on .flex-1{overflow:visible!important}
 .td-editable:focus{outline:2px solid rgba(61,78,255,.35)!important;outline-offset:-2px;background:rgba(61,78,255,.04)!important}
 .del-btn{display:none;width:18px;height:18px;border-radius:50%;border:none;background:#FEE2E2;color:#EF4444;font-size:12px;cursor:pointer;font-weight:700;padding:0;line-height:1;flex-shrink:0;margin-right:6px;vertical-align:middle}
-.adm-on .del-btn{display:inline-flex;align-items:center;justify-content:center}
-.del-sec-btn{display:none}
+.adm-on .del-btn{display:inline-flex!important;align-items:center;justify-content:center}
+.del-sec-btn{display:none!important}
 .adm-on .del-sec-btn{display:block!important}
-.add-row-wrap{display:none}
-.adm-on .add-row-wrap{display:block!important}
-tbody tr{position:relative}
-.del-btn{display:none;position:absolute;left:-26px;top:50%;transform:translateY(-50%);width:20px;height:20px;border-radius:50%;border:none;background:#FEE2E2;color:#EF4444;font-size:13px;cursor:pointer;align-items:center;justify-content:center;font-weight:700;z-index:20;padding:0;line-height:1}
-.add-row-wrap{display:none;padding:6px 14px;cursor:pointer;color:#3D4EFF;font-size:12px;font-weight:600;background:#F0F4FF;border:1px dashed #3D4EFF;border-radius:0 0 8px 8px;text-align:center}
-.editable{outline:none;display:block;width:100%}
-.adm-on .del-btn{display:flex}
-.adm-on .add-row-wrap{display:block}
-.adm-on .editable:focus{background:rgba(61,78,255,.07);border-radius:3px}
-.adm-on table{overflow:visible!important}
-.adm-on .flex-1{overflow:visible!important}
-.td-editable:focus{outline:2px solid rgba(61,78,255,.35)!important;outline-offset:-2px;background:rgba(61,78,255,.04)!important}
-.del-btn{display:none;width:18px;height:18px;border-radius:50%;border:none;background:#FEE2E2;color:#EF4444;font-size:12px;cursor:pointer;font-weight:700;padding:0;line-height:1;flex-shrink:0;margin-right:6px;vertical-align:middle}
-.adm-on .del-btn{display:inline-flex;align-items:center;justify-content:center}
-.del-sec-btn{display:none}
-.adm-on .del-sec-btn{display:block!important}
-.add-row-wrap{display:none}
+.add-row-wrap{display:none!important}
 .adm-on .add-row-wrap{display:block!important}
 </style>
 </head>
@@ -99,11 +74,7 @@ tbody tr{position:relative}
   <div class="hd-sep"></div>
   <span style="font-size:12px;color:#6B7280">예약탭 · 선박예약검색모듈</span>
   <div class="sp"></div>
-  <div style="padding:0 16px;display:flex;align-items:center;gap:8px">
-    <span style="font-size:12px;color:#9CA3AF">2026.04</span>
-    <button id="adm-save-btn" style="display:none;font:12px var(--fn);border:1px solid #22C55E;background:#F0FDF4;border-radius:6px;padding:5px 12px;cursor:pointer;color:#16A34A">저장</button>
-    <button id="adm-toggle-btn" style="font:12px var(--fn);border:1px solid #DEE2E6;background:#fff;border-radius:6px;padding:5px 12px;cursor:pointer;color:#495057">관리자 모드</button>
-  </div>
+  <div style="padding:0 16px;display:flex;align-items:center;gap:8px"><span style="font-size:12px;color:#9CA3AF">2026.04</span><button id="adm-save-btn" style="display:none;font:12px var(--fn);border:1px solid #22C55E;background:#F0FDF4;border-radius:6px;padding:5px 12px;cursor:pointer;color:#16A34A">저장</button><button id="adm-toggle-btn" style="font:12px var(--fn);border:1px solid #DEE2E6;background:#fff;border-radius:6px;padding:5px 12px;cursor:pointer;color:#495057">관리자 모드</button></div>
 </header>
 <div id="body">
   <!-- LEFT -->
@@ -13224,7 +13195,7 @@ updLabels();
           <div id="clsps1"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crsps1" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cisps1" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="sps1" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -14186,7 +14157,7 @@ updLabels();
           <div id="clsps2"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crsps2" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cisps2" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="sps2" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -15122,7 +15093,7 @@ updLabels();
           <div id="clsps2e"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crsps2e" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cisps2e" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="sps2e" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -16053,7 +16024,7 @@ updLabels();
           <div id="clsps2e"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crsps2e" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cisps2e" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="sps2e" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -16989,7 +16960,7 @@ updLabels();
           <div id="clsps2e"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crsps2e" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cisps2e" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="sps2e" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -17935,7 +17906,7 @@ updLabels();
           <div id="clsps3"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crsps3" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cisps3" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="sps3" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -18876,7 +18847,7 @@ updLabels();
           <div id="clsps4"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crsps4" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cisps4" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="sps4" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -19812,7 +19783,7 @@ updLabels();
           <div id="clsps5"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crsps5" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cisps5" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="sps5" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -20748,7 +20719,7 @@ updLabels();
           <div id="clspm1"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crspm1" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cispm1" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="spm1" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -21679,7 +21650,7 @@ updLabels();
           <div id="clspm2"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crspm2" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cispm2" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="spm2" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -22615,7 +22586,7 @@ updLabels();
           <div id="clspm3"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crspm3" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cispm3" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="spm3" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -23551,7 +23522,7 @@ updLabels();
           <div id="clspm5"></div>
           <div style="display:flex;flex-direction:column;gap:6px">
             <select id="crspm5" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
-              <option>PM</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
             </select>
             <textarea id="cispm5" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
             <button class="csb" data-sid="spm5" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
@@ -24431,7 +24402,335 @@ renderCal();
 renderS2();
 updLabels();
 </script>
-<script>window.addEventListener('load',function(){showScreen('s1');setTimeout(function(){openOv('m6');},100);});
+<script>window.addEventListener('load',function(){showScreen('s1');setTimeout(function(){openOv('m6');},100);});</script></body></html>" style="width:375px;height:812px;border:none;transform:scale(0.700);transform-origin:top left;pointer-events:none" sandbox="allow-scripts"></iframe>
+    </div>
+  </div>
+        <div style="font-size:10px;color:#9CA3AF;font-weight:600;letter-spacing:.5px;text-align:center">M6 · PEOPLE PICKER</div>
+      </div>
+      <!-- 우: 스펙 -->
+      <div style="flex:1;padding:24px 28px;overflow:auto">
+        <!-- 진입 조건 -->
+        <div style="margin-bottom:20px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="width:3px;height:16px;background:#8B5CF6;border-radius:2px"></div>
+            <span style="font-size:12px;font-weight:700;color:#374151">진입 조건</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden">
+            <tbody><tr><td style="padding:9px 16px;font-size:12px;color:#6B7280;white-space:nowrap;border-bottom:1px solid #F1F3F5;width:100px">범위</td>
+     <td style="padding:9px 16px;font-size:12px;color:#1A1A2E;border-bottom:1px solid #F1F3F5">최소 1인 ~ 최대 20인</td></tr><tr><td style="padding:9px 16px;font-size:12px;color:#6B7280;white-space:nowrap;border-bottom:1px solid #F1F3F5;width:100px">연동</td>
+     <td style="padding:9px 16px;font-size:12px;color:#1A1A2E;border-bottom:1px solid #F1F3F5">변경 시 S4 요금 계산 실시간 반영</td></tr></tbody>
+          </table>
+        </div>
+        <!-- UI 요소 -->
+        <div style="margin-bottom:20px">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+            <div style="width:3px;height:16px;background:#8B5CF6;border-radius:2px"></div>
+            <span style="font-size:12px;font-weight:700;color:#374151">UI 요소 & 인터랙션</span>
+          </div>
+          <table style="width:100%;border-collapse:collapse;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden">
+            <thead><tr style="background:#F9FAFB">
+              <th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">UI 요소</th>
+              <th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB;width:80px">조건·트리거</th>
+              <th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">상세 동작</th>
+              <th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB;width:120px">알림</th>
+            </tr></thead>
+            <tbody><tr>
+      <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#1A1A2E;border-bottom:1px solid #F1F3F5;white-space:nowrap">- 버튼</td>
+      <td style="padding:9px 16px;font-size:12px;color:#6B7280;border-bottom:1px solid #F1F3F5;white-space:nowrap">탭</td>
+      <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">인원 -1. 1인 미만 불가</td>
+      <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span class="chip cpl" data-chip="%5B%EC%A0%95%EC%B1%85%5D">[정책]</span></td>
+    </tr><tr>
+      <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#1A1A2E;border-bottom:1px solid #F1F3F5;white-space:nowrap">+ 버튼</td>
+      <td style="padding:9px 16px;font-size:12px;color:#6B7280;border-bottom:1px solid #F1F3F5;white-space:nowrap">탭</td>
+      <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">인원 +1. 잔여석 초과 시 비활성</td>
+      <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span class="chip cpl" data-chip="%5B%EC%A0%95%EC%B1%85%5D">[정책]</span></td>
+    </tr><tr>
+      <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#1A1A2E;border-bottom:1px solid #F1F3F5;white-space:nowrap">예약하기 버튼</td>
+      <td style="padding:9px 16px;font-size:12px;color:#6B7280;border-bottom:1px solid #F1F3F5;white-space:nowrap">탭</td>
+      <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">인원 S1 반영 + 바텀시트 닫힘</td>
+      <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span class="chip ccm" data-chip="%5B%EA%B3%B5%ED%86%B5%5D">[공통]</span></td>
+    </tr></tbody>
+          </table>
+        </div>
+        <!-- 코멘트 -->
+        <div id="cssspm6" style="background:#F8F9FC;border:1px solid #E5E7EB;border-radius:8px;padding:16px">
+          <div style="font-size:11px;font-weight:600;color:#9CA3AF;margin-bottom:10px">코멘트</div>
+          <div id="clspm6"></div>
+          <div style="display:flex;flex-direction:column;gap:6px">
+            <select id="crspm6" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:6px 10px;background:#fff;outline:none;width:160px">
+              <option>PM (김채린)</option><option>개발자</option><option>디자이너</option><option>QA</option><option>기획</option>
+            </select>
+            <textarea id="cispm6" style="font:12px var(--fn);border:1px solid #E5E7EB;border-radius:6px;padding:8px 12px;outline:none;resize:none;height:60px;width:100%;background:#fff" placeholder="코멘트를 입력하세요..."></textarea>
+            <button class="csb" data-sid="spm6" style="font:12px var(--fn);background:#3D4EFF;color:#fff;border:none;border-radius:6px;padding:7px 16px;cursor:pointer;align-self:flex-end">등록</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+    <!-- 검색 명세 -->
+    <section style="border-bottom:1px solid #E5E7EB">
+    <div style="position:sticky;top:0;z-index:10;background:#1A1A2E;color:#fff;display:flex;align-items:center;gap:14px;padding:12px 28px;border-bottom:2px solid #F59E0B">
+      <span style="font-size:11px;font-weight:700;background:#F59E0B;color:#fff;border-radius:5px;padding:3px 9px">검색</span>
+      <span style="font-size:14px;font-weight:700">복합 검색 처리 기획</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.5);margin-left:4px">— 검색어 토큰 분리 & AND 조건 필터링</span>
+    </div>
+    <div style="padding:24px 28px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:3px;height:16px;background:#F59E0B;border-radius:2px"></div>
+        <span style="font-size:12px;font-weight:700;color:#374151">검색 예시 & 결과</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;margin-bottom:20px">
+        <thead><tr style="background:#F9FAFB">
+          <th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">검색어</th>
+          <th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB;width:100px">검색 타입</th>
+          <th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">결과</th>
+        </tr></thead>
+        <tbody><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">"경남"</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">지역</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">바다정복호 1건</td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">"인천"</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">지역</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">블랙이글스호·씨마스터호 2건</td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">"참돔"</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">어종</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">바다정복호 1건</td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">"갑오징어"</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">어종</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">블랙이글스호·씨마스터호 2건</td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">"바다정복호"</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">선박명</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">바다정복호 1건</td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">"인천 갑오징어"</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">지역+어종</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">블랙이글스호·씨마스터호 2건 (AND)</td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">"통영 방어"</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">지역+어종</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">0건 → S2E (방어 미보유)</td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">"12"</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">숫자</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">0건 → S2E</td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:600;color:#3D4EFF;border-bottom:1px solid #F1F3F5">(빈 검색)</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="background:#EDE9FE;color:#5B21B6;font-size:10px;border-radius:4px;padding:2px 7px;font-weight:600">전체</span></td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">4건 전체 노출</td>
+  </tr></tbody>
+      </table>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:3px;height:16px;background:#F59E0B;border-radius:2px"></div>
+        <span style="font-size:12px;font-weight:700;color:#374151">처리 규칙</span>
+      </div>
+      <div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:14px 16px">
+        <div style="font-size:11px;font-weight:700;color:#92400E;margin-bottom:8px">우선순위: 선박명 완전일치 > 선박명 부분일치 > 항구명 > 지역명 > 어종명</div>
+        <ul style="padding-left:16px"><li style="font-size:12px;color:#374151;margin-bottom:4px">공백 기준 토큰 분리 → 각 토큰 AND 조건 처리</li><li style="font-size:12px;color:#374151;margin-bottom:4px">복합 토큰 최대 3개까지 AND. 4개 이상은 앞 3개 기준</li><li style="font-size:12px;color:#374151;margin-bottom:4px">결과 0건 → 키워드만: S2E / 필터만: 빈 페이지① / 키워드+필터: 빈 페이지②</li></ul>
+      </div>
+    </div>
+  </section>
+    <!-- 알림 레퍼런스 -->
+    <section style="border-bottom:1px solid #E5E7EB">
+    <div style="position:sticky;top:0;z-index:10;background:#1A1A2E;color:#fff;display:flex;align-items:center;gap:14px;padding:12px 28px;border-bottom:2px solid #EF4444">
+      <span style="font-size:11px;font-weight:700;background:#EF4444;color:#fff;border-radius:5px;padding:3px 9px">REF</span>
+      <span style="font-size:14px;font-weight:700">알림 레퍼런스</span>
+      <span style="font-size:11px;color:rgba(255,255,255,.5);margin-left:4px">— Toast T01~N4 · 카카오 알림톡</span>
+    </div>
+    <div style="padding:24px 28px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:3px;height:16px;background:#F59E0B;border-radius:2px"></div>
+        <span style="font-size:12px;font-weight:700;color:#374151">Toast 메시지</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;margin-bottom:24px"><thead><tr style="background:#F9FAFB"><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">ID</th><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">트리거</th><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">메시지</th><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">위치</th></tr></thead><tbody><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:700;color:#3D4EFF;border-bottom:1px solid #F1F3F5;white-space:nowrap">N1</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">검색 조건 초기화</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">검색 조건이 초기화되었습니다.</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="font-size:10px;background:#F1F3F5;color:#6B7280;border-radius:4px;padding:2px 7px">하단</span></td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:700;color:#3D4EFF;border-bottom:1px solid #F1F3F5;white-space:nowrap">N2</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">예약 완료</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">예약이 완료되었습니다! 알림톡을 확인해 주세요.</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="font-size:10px;background:#F1F3F5;color:#6B7280;border-radius:4px;padding:2px 7px">상단</span></td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:700;color:#3D4EFF;border-bottom:1px solid #F1F3F5;white-space:nowrap">N3</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">어종 3종 초과 선택</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">최대 3종까지 선택 가능합니다.</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="font-size:10px;background:#F1F3F5;color:#6B7280;border-radius:4px;padding:2px 7px">하단</span></td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:700;color:#3D4EFF;border-bottom:1px solid #F1F3F5;white-space:nowrap">N4</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">찜하기 (비회원)</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">로그인 후 이용 가능합니다.</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="font-size:10px;background:#F1F3F5;color:#6B7280;border-radius:4px;padding:2px 7px">하단</span></td>
+  </tr></tbody></table>
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+        <div style="width:3px;height:16px;background:#F59E0B;border-radius:2px"></div>
+        <span style="font-size:12px;font-weight:700;color:#374151">카카오 알림톡</span>
+      </div>
+      <table style="width:100%;border-collapse:collapse;border:1px solid #E5E7EB;border-radius:8px;overflow:hidden;margin-bottom:24px"><thead><tr style="background:#F9FAFB"><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">ID</th><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">발송 시점</th><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">템플릿명</th><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">변수 목록</th><th style="padding:9px 16px;font-size:11px;font-weight:600;color:#9CA3AF;text-align:left;border-bottom:1px solid #E5E7EB">타이밍</th></tr></thead><tbody><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:700;color:#3D4EFF;border-bottom:1px solid #F1F3F5">K1</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">예약 완료</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">예약완료_v1</td>
+    <td style="padding:9px 16px;font-size:12px;color:#6B7280;border-bottom:1px solid #F1F3F5">예약번호, 선박명, 출조일, 인원, 금액, 집결시간</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="font-size:10px;background:#F1F3F5;color:#6B7280;border-radius:4px;padding:2px 7px">즉시</span></td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:700;color:#3D4EFF;border-bottom:1px solid #F1F3F5">K2</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">출조일 D-1 18:00</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">출조전날안내_v1</td>
+    <td style="padding:9px 16px;font-size:12px;color:#6B7280;border-bottom:1px solid #F1F3F5">선박명, 출항시간, 집결장소</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="font-size:10px;background:#F1F3F5;color:#6B7280;border-radius:4px;padding:2px 7px">자동</span></td>
+  </tr><tr>
+    <td style="padding:9px 16px;font-size:12px;font-weight:700;color:#3D4EFF;border-bottom:1px solid #F1F3F5">K3</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">예약 취소 완료</td>
+    <td style="padding:9px 16px;font-size:12px;color:#374151;border-bottom:1px solid #F1F3F5">예약취소완료_v1</td>
+    <td style="padding:9px 16px;font-size:12px;color:#6B7280;border-bottom:1px solid #F1F3F5">예약번호, 환불금액, 처리예정일</td>
+    <td style="padding:9px 16px;border-bottom:1px solid #F1F3F5"><span style="font-size:10px;background:#F1F3F5;color:#6B7280;border-radius:4px;padding:2px 7px">즉시</span></td>
+  </tr></tbody></table>
+    </div>
+  </section>
+    <div style="height:80px"></div>
+  </main>
+</div>
+</div>
+<div id="adm-modal" style="position:fixed;inset:0;background:rgba(0,0,0,.5);display:flex;align-items:center;justify-content:center;z-index:9999;opacity:0;pointer-events:none;transition:opacity .2s">
+  <div style="background:#fff;border-radius:16px;padding:28px 32px;min-width:320px;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+    <div style="font-size:16px;font-weight:700;margin-bottom:16px">관리자 인증</div>
+    <input type="password" id="adm-pw" style="font:14px var(--fn);border:1px solid #DEE2E6;border-radius:8px;padding:10px 14px;width:100%;outline:none;margin-bottom:8px" placeholder="비밀번호 입력">
+    <div id="adm-err" style="font-size:12px;color:#EF4444;margin-bottom:12px;display:none">비밀번호가 올바르지 않습니다.</div>
+    <div style="display:flex;gap:8px;justify-content:flex-end">
+      <button id="adm-cancel-btn" style="font:13px var(--fn);border-radius:8px;padding:8px 18px;cursor:pointer;border:none;background:#F1F3F5;color:#495057">취소</button>
+      <button id="adm-ok-btn" style="font:13px var(--fn);border-radius:8px;padding:8px 18px;cursor:pointer;border:none;background:#3D4EFF;color:#fff">확인</button>
+    </div>
+  </div>
+</div>
+<div class="tip" id="tip"></div>
+<script>
+(function(){
+var pf=document.getElementById('pf');
+var CT={"[DB]":"DB 연동 필요","[API]":"API 연동 필요","[미구현]":"미구현 항목","[정책]":"정책 사항","[예외]":"예외 처리","[공통]":"공통 컴포넌트"};
+var RC={"PM (김채린)":"#3D4EFF","개발자":"#22C55E","디자이너":"#F59E0B","QA":"#EF4444","기획":"#8B5CF6"};
+
+function navP(k){
+  try{pf.contentWindow.postMessage({type:'nav',k:k},'*');}catch(e){}
+  document.getElementById('ws').textContent='현재: '+k.toUpperCase();
+}
+
+document.addEventListener('click',function(e){
+  var wb=e.target.closest('.wbtn[data-k]');
+  if(wb){navP(wb.dataset.k);return;}
+  var csb=e.target.closest('.csb[data-sid]');
+  if(csb){submitC(csb.dataset.sid);return;}
+  var cbe=e.target.closest('.cbe[data-sid]');
+  if(cbe){editC(cbe.dataset.sid,Number(cbe.dataset.cid));return;}
+  var cbd=e.target.closest('.cbd[data-sid]');
+  if(cbd){delC(cbd.dataset.sid,Number(cbd.dataset.cid));return;}
+});
+
+// 칩 툴팁
+var tipEl=null,tipT=null;
+document.addEventListener('mouseover',function(e){
+  var c=e.target.closest('.chip');if(!c)return;
+  if(!tipEl)tipEl=document.getElementById('tip');
+  tipEl.textContent=CT[decodeURIComponent(c.dataset.chip||'')]||'';
+  var r=c.getBoundingClientRect();
+  tipEl.style.left=r.left+'px';tipEl.style.top=(r.bottom+6)+'px';
+  tipEl.classList.add('vis');if(tipT)clearTimeout(tipT);
+});
+document.addEventListener('mouseout',function(e){
+  if(!e.target.closest('.chip'))return;
+  tipT=setTimeout(function(){if(tipEl)tipEl.classList.remove('vis');},80);
+});
+
+// 코멘트
+function p2(n){return n<10?'0'+n:''+n;}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+function gC(sid){try{return JSON.parse(localStorage.getItem('sbc_'+sid)||'[]');}catch(e){return[];}}
+function sC(sid,arr){try{localStorage.setItem('sbc_'+sid,JSON.stringify(arr));}catch(e){}}
+function renderC(sid){
+  var el=document.getElementById('cl'+sid);if(!el)return;
+  var arr=gC(sid);if(!arr.length){el.innerHTML='';return;}
+  el.innerHTML=arr.map(function(c){
+    var col=RC[c.role]||'#666';
+    return '<div style="display:flex;gap:8px;margin-bottom:10px"><div style="width:26px;height:26px;border-radius:50%;background:'+col+';display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;flex-shrink:0">'+c.role[0]+'</div><div style="flex:1"><div style="font-size:11px;font-weight:600;color:#374151">'+c.role+'<span style="font-weight:400;color:#9CA3AF;margin-left:6px">'+c.time+'</span></div><div style="font-size:12px;color:#374151;margin-top:2px;line-height:1.5">'+esc(c.text)+'</div><div style="margin-top:3px"><button class="cbe" data-sid="'+sid+'" data-cid="'+c.id+'">수정</button> <button class="cbd" data-sid="'+sid+'" data-cid="'+c.id+'">삭제</button></div></div></div>';
+  }).join('');
+}
+function submitC(sid){
+  var re=document.getElementById('cr'+sid);var ie=document.getElementById('ci'+sid);
+  if(!re||!ie)return;var txt=ie.value.trim();if(!txt)return;
+  var now=new Date();
+  var ts=now.getFullYear()+'.'+p2(now.getMonth()+1)+'.'+p2(now.getDate())+' '+p2(now.getHours())+':'+p2(now.getMinutes());
+  var id=Date.now();var arr=gC(sid);arr.push({id:id,role:re.value,text:txt,time:ts});
+  sC(sid,arr);ie.value='';renderC(sid);
+  var el=document.querySelector('#cl'+sid+' div:last-child');
+  if(el)setTimeout(function(){el.scrollIntoView({behavior:'smooth',block:'nearest'});},100);
+}
+function editC(sid,cid){
+  var arr=gC(sid);var f=null;for(var i=0;i<arr.length;i++)if(arr[i].id===cid){f=arr[i];break;}
+  if(!f)return;var nt=prompt('수정',f.text);if(!nt||!nt.trim())return;f.text=nt.trim();sC(sid,arr);renderC(sid);
+}
+function delC(sid,cid){
+  if(!confirm('삭제?'))return;var arr=gC(sid);sC(sid,arr.filter(function(c){return c.id!==cid;}));renderC(sid);
+}
+
+// 초기화
+(function(){
+  var d=document.getElementsByTagName('div');
+  for(var i=0;i<d.length;i++){var e=d[i];if(e.id&&e.id.length>2&&e.id[0]==='c'&&e.id[1]==='l')renderC(e.id.substring(2));}
+})();
+})();
+
+// ── 좌측 패널 리사이즈 ──
+(function(){
+  var resizer = document.getElementById('resizer');
+  var left = document.getElementById('left');
+  var pw = document.getElementById('pw');
+  var pf = document.getElementById('pf');
+  if(!resizer||!left) return;
+  
+  var isDown = false, startX = 0, startW = 0;
+  
+  resizer.addEventListener('mousedown', function(e){
+    isDown = true;
+    startX = e.clientX;
+    startW = left.offsetWidth;
+    document.body.style.cursor = 'col-resize';
+    document.body.style.userSelect = 'none';
+    resizer.style.background = 'rgba(61,78,255,.15)';
+    e.preventDefault();
+  });
+  
+  document.addEventListener('mousemove', function(e){
+    if(!isDown) return;
+    var delta = e.clientX - startX;
+    var newW = Math.max(220, Math.min(600, startW + delta));
+    left.style.width = newW + 'px';
+    
+    // 폰 목업 크기 조정
+    if(pw && pf) {
+      // 패널 너비에 따라 스케일 계산
+      var scale = Math.min(0.85, (newW - 40) / 375);
+      scale = Math.max(0.4, scale);
+      var pwW = Math.round(375 * scale * 1.025);
+      var pwH = Math.round(812 * scale * 1.025);
+      pw.style.width = pwW + 'px';
+      pw.style.height = pwH + 'px';
+      pf.style.zoom = scale;
+    }
+  });
+  
+  document.addEventListener('mouseup', function(){
+    if(!isDown) return;
+    isDown = false;
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+    resizer.style.background = '';
+  });
+})();
+
+
 (function(){
   var IS_ADM=false, PW='0601', STORE_KEY='sb_edits_v25', eid=0;
 
