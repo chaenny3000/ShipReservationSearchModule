@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="ko"><head>
 <meta charset="UTF-8">
-<title>어바웃피싱 · 예약검색 스토리보드 v26.0</title>
+<title>어바웃피싱 · 예약검색 스토리보드 v29.0</title>
 <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
 *{box-sizing:border-box;margin:0;padding:0}
@@ -190,11 +190,66 @@ body{font-family:-apple-system,sans-serif;background:#F5F6F8;width:375px;height:
       <div class=&quot;chip srch-term&quot; data-term=&quot;인천&quot;>인천 ×</div><div class=&quot;chip srch-term&quot; data-term=&quot;12&quot;>12 ×</div><div class=&quot;chip srch-term&quot; data-term=&quot;남당항 쭈꾸미&quot;>남당항 쭈꾸미 ×</div><div class=&quot;chip srch-term&quot; data-term=&quot;인천 갑오징어&quot;>인천 갑오징어 ×</div>
     </div>
   </div>
-  <div style=&quot;padding:16px 14px 0&quot;>
-    <div style=&quot;font-size:14px;font-weight:700;margin-bottom:12px&quot;>기획전 카테고리</div>
-    <div style=&quot;display:flex;gap:16px;overflow-x:auto;padding-bottom:4px&quot;>
-      <div class=&quot;srch-term&quot; data-term=&quot;주꾸미&quot; style=&quot;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0&quot;><div style=&quot;width:66px;height:66px;border-radius:50%;background:#F5F6F8;display:flex;align-items:center;justify-content:center;font-size:30px&quot;>🐟</div><span style=&quot;font-size:11px;font-weight:500&quot;>주꾸미</span></div><div class=&quot;srch-term&quot; data-term=&quot;갑오징어&quot; style=&quot;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0&quot;><div style=&quot;width:66px;height:66px;border-radius:50%;background:#F5F6F8;display:flex;align-items:center;justify-content:center;font-size:30px&quot;>🐟</div><span style=&quot;font-size:11px;font-weight:500&quot;>갑오징어</span></div><div class=&quot;srch-term&quot; data-term=&quot;참돔&quot; style=&quot;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0&quot;><div style=&quot;width:66px;height:66px;border-radius:50%;background:#F5F6F8;display:flex;align-items:center;justify-content:center;font-size:30px&quot;>🐟</div><span style=&quot;font-size:11px;font-weight:500&quot;>참돔</span></div><div class=&quot;srch-term&quot; data-term=&quot;우럭&quot; style=&quot;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;flex-shrink:0&quot;><div style=&quot;width:66px;height:66px;border-radius:50%;background:#F5F6F8;display:flex;align-items:center;justify-content:center;font-size:30px&quot;>🐟</div><span style=&quot;font-size:11px;font-weight:500&quot;>우럭</span></div>
+  <div style=&quot;padding:16px 0 0&quot;>
+    <div style=&quot;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;padding:0 14px&quot;>
+      <div style=&quot;display:flex;align-items:center;gap:6px&quot;>
+        <div style=&quot;font-size:14px;font-weight:700&quot;>추천 선박</div>
+        <span style=&quot;font-size:9px;font-weight:600;color:#fff;background:#ADB5BD;border-radius:3px;padding:1px 5px&quot;>AD</span>
+      </div>
+      <div style=&quot;font-size:11px;color:#ADB5BD&quot;>광고 선박입니다</div>
     </div>
+    <div style=&quot;display:flex;gap:10px;overflow-x:auto;padding:0 14px 4px;-webkit-overflow-scrolling:touch&quot;>
+      <div class=&quot;card-ship&quot; data-nav=&quot;s3&quot; style=&quot;flex-shrink:0;width:150px;border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.08)&quot;>
+        <div style=&quot;height:90px;background:linear-gradient(160deg,#1A2744,#1A2744BB);display:flex;align-items:center;justify-content:center;position:relative&quot;>
+          <span style=&quot;font-size:36px&quot;>⛵</span>
+          <span style=&quot;position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;backdrop-filter:blur(4px)&quot;>광고</span>
+        </div>
+        <div style=&quot;padding:10px 10px 12px;background:#fff&quot;>
+          <div style=&quot;font-size:12px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis&quot;>바다정복호</div>
+          <div style=&quot;font-size:10px;color:#868E96;margin-bottom:4px&quot;>경남 통영항</div>
+          <div style=&quot;font-size:10px;color:#3D4EFF;font-weight:600;margin-bottom:6px&quot;>참돔·감성돔</div>
+          <div style=&quot;font-size:13px;font-weight:800;color:#1A1A2E&quot;>120,000<span style=&quot;font-size:10px;font-weight:400;color:#868E96&quot;>원~</span></div>
+        </div>
+      </div>
+      <div class=&quot;card-ship&quot; data-nav=&quot;s3&quot; style=&quot;flex-shrink:0;width:150px;border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.08)&quot;>
+        <div style=&quot;height:90px;background:linear-gradient(160deg,#0D3B6E,#0D3B6EBB);display:flex;align-items:center;justify-content:center;position:relative&quot;>
+          <span style=&quot;font-size:36px&quot;>⛵</span>
+          <span style=&quot;position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;backdrop-filter:blur(4px)&quot;>HOT</span>
+        </div>
+        <div style=&quot;padding:10px 10px 12px;background:#fff&quot;>
+          <div style=&quot;font-size:12px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis&quot;>블랙이글스호</div>
+          <div style=&quot;font-size:10px;color:#868E96;margin-bottom:4px&quot;>인천 연안부두</div>
+          <div style=&quot;font-size:10px;color:#3D4EFF;font-weight:600;margin-bottom:6px&quot;>갑오징어·광어</div>
+          <div style=&quot;font-size:13px;font-weight:800;color:#1A1A2E&quot;>90,000<span style=&quot;font-size:10px;font-weight:400;color:#868E96&quot;>원~</span></div>
+        </div>
+      </div>
+      <div class=&quot;card-ship&quot; data-nav=&quot;s3&quot; style=&quot;flex-shrink:0;width:150px;border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.08)&quot;>
+        <div style=&quot;height:90px;background:linear-gradient(160deg,#1B4332,#1B4332BB);display:flex;align-items:center;justify-content:center;position:relative&quot;>
+          <span style=&quot;font-size:36px&quot;>⛵</span>
+          <span style=&quot;position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;backdrop-filter:blur(4px)&quot;>특가</span>
+        </div>
+        <div style=&quot;padding:10px 10px 12px;background:#fff&quot;>
+          <div style=&quot;font-size:12px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis&quot;>씨마스터호</div>
+          <div style=&quot;font-size:10px;color:#868E96;margin-bottom:4px&quot;>인천 연안부두</div>
+          <div style=&quot;font-size:10px;color:#3D4EFF;font-weight:600;margin-bottom:6px&quot;>갑오징어·우럭</div>
+          <div style=&quot;font-size:13px;font-weight:800;color:#1A1A2E&quot;>68,000<span style=&quot;font-size:10px;font-weight:400;color:#868E96&quot;>원~</span></div>
+        </div>
+      </div>
+      <div class=&quot;card-ship&quot; data-nav=&quot;s3&quot; style=&quot;flex-shrink:0;width:150px;border-radius:14px;overflow:hidden;cursor:pointer;box-shadow:0 2px 12px rgba(0,0,0,.08)&quot;>
+        <div style=&quot;height:90px;background:linear-gradient(160deg,#3B1F0D,#3B1F0DBB);display:flex;align-items:center;justify-content:center;position:relative&quot;>
+          <span style=&quot;font-size:36px&quot;>⛵</span>
+          <span style=&quot;position:absolute;top:8px;left:8px;font-size:9px;font-weight:700;color:#fff;background:rgba(255,255,255,.25);border-radius:4px;padding:2px 7px;backdrop-filter:blur(4px)&quot;>인기</span>
+        </div>
+        <div style=&quot;padding:10px 10px 12px;background:#fff&quot;>
+          <div style=&quot;font-size:12px;font-weight:700;margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis&quot;>부산 갈치호</div>
+          <div style=&quot;font-size:10px;color:#868E96;margin-bottom:4px&quot;>부산 남항부두</div>
+          <div style=&quot;font-size:10px;color:#3D4EFF;font-weight:600;margin-bottom:6px&quot;>갈치·삼치</div>
+          <div style=&quot;font-size:13px;font-weight:800;color:#1A1A2E&quot;>75,000<span style=&quot;font-size:10px;font-weight:400;color:#868E96&quot;>원~</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
   </div>
   <div style=&quot;padding:16px 14px 0&quot;>
     <div style=&quot;display:flex;align-items:center;justify-content:space-between;margin-bottom:12px&quot;><div style=&quot;font-size:14px;font-weight:700&quot;>급상승 검색어</div><div style=&quot;font-size:10px;color:#ADB5BD&quot;>오후 2:00 업데이트</div></div>
@@ -474,30 +529,10 @@ function _render(id) {
   closeAllOv();
   try{ parent.postMessage({type:'nav',k:id},'*'); }catch(e){}
 }
-function goToS2AndOpen(modalKey) {
-  // S2로 이동 후 해당 모달 자동 오픈
-  STACK.push('s1');
-  _render('s2');
-  renderS2();
-  setTimeout(function(){
-    if(modalKey === 'm1') renderCal();
-    openOv(modalKey);
-  }, 150);
-}
 function navigate(id) {
-  // 홈/탐색: 전체 초기화
+  // 홈/탐색: 스택 초기화
   if(id==='s1'||id==='srch'){ resetAll(); STACK=[]; _render(id); return; }
-  // S2 재진입 시 지역·어종 필터 초기화 (검색어만 유지)
-  if(id==='s2') {
-    ST.regions=[]; ST.fish=[];
-    var rc=document.getElementsByClassName('reg-chip');
-    for(var i=0;i<rc.length;i++) rc[i].classList.remove('sel');
-    var fc=document.getElementsByClassName('fish-chip');
-    for(var i=0;i<fc.length;i++) fc[i].classList.remove('sel');
-    var ra=document.getElementById('reg-all'); if(ra)ra.classList.remove('sel');
-    var fa=document.getElementById('fish-all'); if(fa)fa.classList.remove('sel');
-    updLabels();
-  }
+  // 현재 화면을 스택에 push (같은 화면 중복 방지)
   var cur = _getCur();
   if(cur &amp;&amp; cur!==id) STACK.push(cur);
   _render(id);
@@ -763,12 +798,6 @@ function onSrchInput(val) {
 }
 function doSearchTerm(term) {
   ST.query=term||'';
-  // 새 검색 시 지역·어종 필터 초기화
-  ST.regions=[]; ST.fish=[];
-  var rc=document.getElementsByClassName('reg-chip'); for(var i=0;i<rc.length;i++)rc[i].classList.remove('sel');
-  var fc=document.getElementsByClassName('fish-chip'); for(var i=0;i<fc.length;i++)fc[i].classList.remove('sel');
-  var ra=document.getElementById('reg-all'); if(ra)ra.classList.remove('sel');
-  var fa=document.getElementById('fish-all'); if(fa)fa.classList.remove('sel');
   var inp=document.getElementById('srch-input'); if(inp)inp.value=ST.query;
   var sg=document.getElementById('srch-suggest'); if(sg)sg.style.display='none';
   updLabels();
@@ -797,10 +826,10 @@ document.addEventListener('click', function(e) {
     ? t : (t.closest('#srch-back')||t.closest('#s2-back')||t.closest('#s2e-back')||t.closest('#s3-back')||t.closest('#s4-back'));
   if(backEl) { goBack(); return; }
   // 필터칩 → 모달
-  if(t.id==='s1-date-btn'||t.closest('#s1-date-btn')) { goToS2AndOpen('m1'); return; }
-  if(t.id==='s1-ppl-btn'||t.closest('#s1-ppl-btn')) { goToS2AndOpen('m6'); return; }
-  if(t.id==='s1-reg-btn'||t.closest('#s1-reg-btn')) { goToS2AndOpen('m3'); return; }
-  if(t.id==='s1-fish-btn'||t.closest('#s1-fish-btn')) { goToS2AndOpen('m2'); return; }
+  if(t.id==='s1-date-btn'||t.closest('#s1-date-btn')) { renderCal(); openOv('m1'); return; }
+  if(t.id==='s1-ppl-btn'||t.closest('#s1-ppl-btn')) { openOv('m6'); return; }
+  if(t.id==='s1-reg-btn'||t.closest('#s1-reg-btn')) { openOv('m3'); return; }
+  if(t.id==='s1-fish-btn'||t.closest('#s1-fish-btn')) { openOv('m2'); return; }
   if(t.id==='s2-fc-date'||t.closest('#s2-fc-date')) { renderCal(); openOv('m1'); return; }
   if(t.id==='s2-fc-ppl'||t.closest('#s2-fc-ppl')) { openOv('m6'); return; }
   if(t.id==='s2-fc-reg'||t.closest('#s2-fc-reg')) { openOv('m3'); return; }
@@ -816,7 +845,7 @@ document.addEventListener('click', function(e) {
     var sd=document.getElementById('s4-date'); if(sd)sd.textContent=ST.month+'월 '+ST.day+'일 ('+DOWS[gd(ST.year,ST.month,ST.day)]+')';
     var s5d=document.getElementById('s5-date'); if(s5d)s5d.textContent=ST.month+'월 '+ST.day+'일 05:00';
     updLabels(); closeOv('m1');
-    var cur=_getCur(); if(cur==='s2')renderS2(); return;
+    var cur=getCurScreen(); if(cur==='s2')renderS2(); return;
   }
   if(t.id==='cal-prev') {
     CAL.month--; if(CAL.month<1){CAL.month=12;CAL.year--;} CAL.selDay=null; renderCal(); return;
@@ -829,18 +858,18 @@ document.addEventListener('click', function(e) {
     var sel=[]; var fc=document.getElementsByClassName('fish-chip');
     for(var i=0;i<fc.length;i++) if(fc[i].classList.contains('sel')) sel.push(fc[i].textContent);
     ST.fish=sel; updLabels(); closeOv('m2');
-    var cur=_getCur(); if(cur==='s2')renderS2(); return;
+    var cur=getCurScreen(); if(cur==='s2')renderS2(); return;
   }
   if(t.id==='reg-apply') {
     var sel=[]; var rc=document.getElementsByClassName('reg-chip');
     for(var i=0;i<rc.length;i++) if(rc[i].classList.contains('sel')) sel.push(rc[i].textContent);
     ST.regions=sel; updLabels(); closeOv('m3');
-    var cur=_getCur(); if(cur==='s2')renderS2(); return;
+    var cur=getCurScreen(); if(cur==='s2')renderS2(); return;
   }
   if(t.id==='m6-apply') {
     ST.people=parseInt(document.getElementById('m6-cnt').textContent)||1;
     setTxt('s4-ppl',ST.people); updPrice(); updLabels(); closeOv('m6');
-    var cur=_getCur(); if(cur==='s2')renderS2(); return;
+    var cur=getCurScreen(); if(cur==='s2')renderS2(); return;
   }
   if(t.id==='m5-back') { closeOv('m5'); return; }
   if(t.id==='m5-confirm') { go('s1'); return; }
@@ -24729,6 +24758,16 @@ function delC(sid,cid){
     resizer.style.background = '';
   });
 })();
+
+
+
+
+
+
+
+
+
+
 
 
 (function(){
