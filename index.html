@@ -28,7 +28,7 @@ html,body{height:100%;font-family:var(--fn);color:#1A1A2E;background:#fff}
 #pw{position:relative;width:327px;height:708px;background:#111827;border-radius:38px;box-shadow:0 16px 48px rgba(0,0,0,.35),inset 0 0 0 1px rgba(255,255,255,.08);overflow:hidden}
 #pw::before{content:'';position:absolute;top:0;left:50%;transform:translateX(-50%);width:90px;height:24px;background:#111827;border-radius:0 0 14px 14px;z-index:10;pointer-events:none}
 #pw-screen{position:absolute;inset:5px;border-radius:34px;overflow:hidden;background:#fff;pointer-events:all}
-#pf{width:375px;height:812px;border:none;zoom:0.624;transform-origin:top left}
+#pf{width:375px;height:812px;border:none;transform-origin:top left;transform:scale(0.860)}
 #ws{margin-top:10px;font-size:10px;color:#9CA3AF;text-align:center;min-height:14px}
 /* RIGHT */
 #right{flex:1;overflow-y:auto;height:calc(100vh - 48px)}
@@ -105,7 +105,7 @@ body{font-family:var(--fn);color:#1A1A2E;background:#fff;min-height:100vh}
     <span style="font-size:11px;color:#9CA3AF">어바웃피싱</span>
     <span style="color:#D1D5DB;font-size:12px">/</span>
     <span class="hd-title">스프린트 스토리보드</span>
-    <span class="hd-ver">sprint-v1</span>
+    <span class="hd-ver">sprint-v30</span>
   </div>
   <div class="hd-sep"></div>
   <span style="font-size:12px;color:#6B7280">2개월 스프린트 · 예약 완결 루프</span>
@@ -1046,7 +1046,7 @@ body{font-family:-apple-system,&#x27;Apple SD Gothic Neo&#x27;,&#x27;Noto Sans K
     &lt;/div&gt;
   &lt;/div&gt;&lt;!-- /scr --&gt;
 
-  &lt;div style=&quot;padding:8px 16px 18px;background:#fff;display:flex;gap:10px&quot;&gt;
+  &lt;div style=&quot;padding:10px 16px 20px;background:#fff;display:flex;gap:10px;flex-shrink:0;border-top:1px solid #E2E8F0&quot;&gt;
     &lt;div class=&quot;btn&quot; onclick=&quot;go(&#x27;s-home&#x27;)&quot; style=&quot;flex:1;border:2px solid #1A56DB;border-radius:10px;padding:14px;text-align:center;color:#1A56DB;font-size:14px;font-weight:700&quot;&gt;홈으로&lt;/div&gt;
     &lt;div class=&quot;btn&quot; onclick=&quot;go(&#x27;s-book-detail&#x27;)&quot; style=&quot;flex:2;background:#1A56DB;border-radius:10px;padding:14px;text-align:center;color:#fff;font-size:14px;font-weight:700&quot;&gt;예약내역 보기&lt;/div&gt;
   &lt;/div&gt;
@@ -5497,8 +5497,8 @@ function delC(sid,cid){
   /* 초기 zoom 설정 — scale 0.85 (디폴트 최대 크기) */
   setTimeout(function(){
     if(pw && pf) {
-      var initScale = 0.85;
-      pf.style.zoom = initScale;
+      var initScale = 0.860;
+      pf.style.transform = 'scale(' + initScale + ')';
     }
   }, 100);
 
@@ -5529,7 +5529,7 @@ function delC(sid,cid){
       var pwH = Math.round(812 * scale * 1.025);
       pw.style.width = pwW + 'px';
       pw.style.height = pwH + 'px';
-      pf.style.zoom = scale;
+      pf.style.transform = 'scale(' + scale + ')';
     }
   });
   
@@ -5548,10 +5548,10 @@ function delC(sid,cid){
 
 
 (function(){
-  var IS_ADM=false, PW='0104', STORE_KEY='sb_edits_v47', eid=0;
+  var IS_ADM=false, PW='0104', STORE_KEY='sb_edits_v50', eid=0;
 
   /* ── 섹션 통 편집 저장/복원 ── */
-  var SEC_KEY = 'sb_sec_edits_v47';
+  var SEC_KEY = 'sb_sec_edits_v50';
 
   function saveAll(){
     try{
